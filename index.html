@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Milky Way Mania</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css" type="text/css">
+  <script type="text/javascript" src="./gl-matrix-master/dist/gl-matrix.js"></script>
+  <script type="text/javascript" src="./three.js-master/build/three.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+  <!-- <script type="text/javascript" src="./planetRendering.js"></script> -->
+</head>
+
+<body>
+  <div id="container">
+
+  </div>
+
+</body>
+
+<!-- Shaders -->
+<script type="x-shader/x-vertex" id="vertexshader">
+
+// switch on high precision floats
+#ifdef GL_ES
+precision highp float;
+#endif
+
+void main()
+{
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+}
+
+</script>
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+#ifdef GL_ES
+precision highp float;
+#endif
+
+void main()
+{
+  gl_FragColor 	= vec4(1.0,0.0,1.0,1.0);
+}
+
+</script>
+
+
+
+<!-- End Shaders -->
+
+<!-- Launch the loop -->
+<script type="text/javascript" src="./main.js"></script>
+
+</html>
