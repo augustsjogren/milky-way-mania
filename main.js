@@ -22,6 +22,17 @@ var camera = new THREE.PerspectiveCamera(
   FAR
 );
 
+var controls = new THREE.TrackballControls( camera );
+controls.rotateSpeed = 1.5;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 1.0;
+controls.noZoom = false;
+controls.noPan = false;
+controls.staticMoving = true;
+controls.dynamicDampingFactor = 0.3;
+controls.keys = [ 65, 83, 68 ];
+controls.addEventListener( 'change', render );
+
 var scene = new THREE.Scene();
 
 // the camera starts at 0,0,0 so pull it back
@@ -37,33 +48,33 @@ renderer.setSize(WIDTH, HEIGHT);
 // DOM element.
 $container.append(renderer.domElement);
 
-// // create a point light
-// const pointLight =
-// new THREE.PointLight(0xFFFFFF);
-//
-// // set its position
-// pointLight.position.x = 10;
-// pointLight.position.y = 50;
-// pointLight.position.z = 130;
-//
-// // add to the scene
-// scene.add(pointLight);
+// Unused for now
+var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
+var pointLight = new THREE.PointLight( 0xff0000, 1.0, 0 );
+pointLight.position.set(250, 0, 100);
+//scene.add( pointLight );
+//scene.add( light );
 
-// add a uniform for the amplitude
-var uniforms = {
-  amplitude: {
-    type: 'f', // a float
-    value: 1
-  }
+// Light stuff
+var uniforms = THREE.UniformsUtils.merge( [
+
+  THREE.UniformsLib[ "lights" ]
+
+] );
+
+// Add the amplitude uniform
+uniforms.amplitude = {
+  type: 'f', // a float
+  value: 1
 };
 
 // create the sphere's material
 var shaderMaterial = new THREE.ShaderMaterial({
   uniforms:       uniforms,
   vertexShader:   $('#vertexshader').text(),
-  fragmentShader: $('#fragmentshader').text()
+  fragmentShader: $('#fragmentshader').text(),
+  lights:         true
 });
-
 
 // Set up the sphere vars
 var RADIUS = 50;
@@ -80,6 +91,7 @@ for (var i = 0; i < displacement.length; i++){
 geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
 sphere = new THREE.Mesh( geometry, shaderMaterial );
 
+
 // Add  to the scene.
 scene.add(sphere);
 scene.add(camera);
@@ -92,19 +104,21 @@ function update () {
 
   //sphere.rotateZ(0.01);
 
-  // for ( var i = 0; i < displacement.length; i ++ ) {
-  // 	displacement[ i ] = Math.sin( 0.1 * i + time );
-  // }
-  //
   // // sphere.geometry.attributes.displacement.needsUpdate = true;
   //
   // sphere.geometry.getAttribute('displacement').needsUpdate = true;
 
-  // Draw!
-  renderer.render(scene, camera);
+  controls.update();
+
+  render();
 
   // Schedule the next frame.
   requestAnimationFrame(update);
+}
+
+function render() {
+  // Draw!
+  renderer.render(scene, camera);
 }
 
 update();
