@@ -49,8 +49,17 @@ $container.append(renderer.domElement);
 // // add to the scene
 // scene.add(pointLight);
 
+// add a uniform for the amplitude
+var uniforms = {
+  amplitude: {
+    type: 'f', // a float
+    value: 1
+  }
+};
+
 // create the sphere's material
 var shaderMaterial = new THREE.ShaderMaterial({
+  uniforms:       uniforms,
   vertexShader:   $('#vertexshader').text(),
   fragmentShader: $('#fragmentshader').text()
 });
@@ -62,7 +71,6 @@ var SEGMENTS = 16;
 var RINGS = 16;
 
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
-
 displacement = new Float32Array( geometry.attributes.position.count );
 
 for (var i = 0; i < displacement.length; i++){
@@ -70,9 +78,7 @@ for (var i = 0; i < displacement.length; i++){
 }
 
 geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
-
 sphere = new THREE.Mesh( geometry, shaderMaterial );
-
 
 // Add  to the scene.
 scene.add(sphere);
@@ -81,6 +87,8 @@ scene.add(camera);
 function update () {
 
   var time = Date.now() * 0.01;
+
+  //uniforms.amplitude.value = Math.sin(time);
 
   //sphere.rotateZ(0.01);
 

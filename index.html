@@ -25,13 +25,17 @@
 precision highp float;
 #endif
 
+uniform float amplitude;
 attribute float displacement;
 varying vec3 vNormal;
+varying vec3 pos;
 
 void main()
 {
   vNormal = normal;
-  vec3 newPosition = position + normal * vec3(displacement);
+  vec3 newPosition = position + normal * vec3(displacement * amplitude);
+  // pos = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  pos = newPosition;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 
@@ -44,6 +48,7 @@ precision highp float;
 
 // same name and type as VS
 varying vec3 vNormal;
+varying vec3 pos;
 
 void main()
 {
@@ -56,7 +61,16 @@ void main()
   // calculate the dot product of the light to the vertex normal
   float dProd = max(0.0, dot(vNormal, light));
 
-  gl_FragColor 	= vec4(dProd, dProd, dProd, 1.0);
+  vec4 col = vec4(0.8, 0.5, 0.1, 1.0);
+
+  // Divide by length to normalize the color. Length = radius of the sphere
+  col.x = col.x * (1.0 - (abs(pos.x) / length(pos)));
+
+  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
+
+  vec4 final = col * prod;
+
+  gl_FragColor 	= final;
 }
 
 </script>
