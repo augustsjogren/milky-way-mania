@@ -12,7 +12,7 @@
 
 <body>
   <div id="container">
-
+    <!-- The canvas where the rendering takes place -->
   </div>
 
 </body>
@@ -25,9 +25,14 @@
 precision highp float;
 #endif
 
+attribute float displacement;
+varying vec3 vNormal;
+
 void main()
 {
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+  vNormal = normal;
+  vec3 newPosition = position + normal * vec3(displacement);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 
 </script>
@@ -37,15 +42,24 @@ void main()
 precision highp float;
 #endif
 
+// same name and type as VS
+varying vec3 vNormal;
+
 void main()
 {
-  gl_FragColor 	= vec4(1.0,0.0,1.0,1.0);
+  // calc the dot product and clamp 0 -> 1 rather than -1 -> 1
+  vec3 light = vec3(0.5, 0.2, 1.0);
+
+  // ensure it's normalized
+  light = normalize(light);
+
+  // calculate the dot product of the light to the vertex normal
+  float dProd = max(0.0, dot(vNormal, light));
+
+  gl_FragColor 	= vec4(dProd, dProd, dProd, 1.0);
 }
 
 </script>
-
-
-
 <!-- End Shaders -->
 
 <!-- Launch the loop -->

@@ -1,7 +1,4 @@
 // Set the scene size.
-// const WIDTH = 400;
-// const HEIGHT = 300;
-
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
 
@@ -52,51 +49,54 @@ $container.append(renderer.domElement);
 // // add to the scene
 // scene.add(pointLight);
 
-// attach the render-supplied DOM element
-//$container.append(renderer.domElement);
-
 // create the sphere's material
 var shaderMaterial = new THREE.ShaderMaterial({
   vertexShader:   $('#vertexshader').text(),
   fragmentShader: $('#fragmentshader').text()
 });
 
-// create the sphere's material
-// const sphereMaterial =
-// new THREE.MeshLambertMaterial(
-//   {
-//     color: 0xCC0000
-//   });
 
 // Set up the sphere vars
 var RADIUS = 50;
 var SEGMENTS = 16;
 var RINGS = 16;
 
-// Create a new mesh with
-// sphere geometry - we will cover
-// the sphereMaterial next!
-var sphere = new THREE.Mesh(
+var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 
-  new THREE.SphereGeometry(
-    RADIUS,
-    SEGMENTS,
-    RINGS),
-    shaderMaterial);
+displacement = new Float32Array( geometry.attributes.position.count );
 
-    // Add  to the scene.
-    scene.add(sphere);
-    scene.add(camera);
+for (var i = 0; i < displacement.length; i++){
+  displacement[i] = Math.random()*10;
+}
 
-    function update () {
+geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
 
-      sphere.rotateZ(0.01);
+sphere = new THREE.Mesh( geometry, shaderMaterial );
 
-      // Draw!
-      renderer.render(scene, camera);
 
-      // Schedule the next frame.
-      requestAnimationFrame(update);
-    }
+// Add  to the scene.
+scene.add(sphere);
+scene.add(camera);
 
-    update();
+function update () {
+
+  var time = Date.now() * 0.01;
+
+  //sphere.rotateZ(0.01);
+
+  // for ( var i = 0; i < displacement.length; i ++ ) {
+  // 	displacement[ i ] = Math.sin( 0.1 * i + time );
+  // }
+  //
+  // // sphere.geometry.attributes.displacement.needsUpdate = true;
+  //
+  // sphere.geometry.getAttribute('displacement').needsUpdate = true;
+
+  // Draw!
+  renderer.render(scene, camera);
+
+  // Schedule the next frame.
+  requestAnimationFrame(update);
+}
+
+update();
