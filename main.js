@@ -1,5 +1,6 @@
 function init(){
   document.getElementById("amp-slider").value = 0.0;
+  document.getElementById("amp-small-slider").value = 0.0;
   document.getElementById("radius-slider").value = 1.0;
 }
 
@@ -68,6 +69,11 @@ var uniforms = THREE.UniformsUtils.merge( [
 
 ] );
 
+uniforms.smallAmplitude = {
+  type:'f', // a float
+  value:1
+};
+
 // Add the amplitude uniform
 uniforms.amplitude = {
   type: 'f', // a float
@@ -84,8 +90,8 @@ var shaderMaterial = new THREE.ShaderMaterial({
 
 // Set up the sphere vars
 var RADIUS = 50;
-var SEGMENTS = 32;
-var RINGS = 32;
+var SEGMENTS = 128;
+var RINGS = 128;
 
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 displacement = new Float32Array( geometry.attributes.position.count );
@@ -108,6 +114,7 @@ function update () {
 
   // Refresh noise value from the slider
   uniforms.amplitude.value = document.getElementById("amp-slider").value;
+  uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
 
   controls.update();
 
