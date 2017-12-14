@@ -1,3 +1,8 @@
+function init(){
+  document.getElementById("amp-slider").value = 0.0;
+  document.getElementById("radius-slider").value = 1.0;
+}
+
 // Set the scene size.
 var WIDTH = window.innerWidth;
 var HEIGHT = window.innerHeight;
@@ -22,6 +27,10 @@ var camera = new THREE.PerspectiveCamera(
   FAR
 );
 
+var ctx = renderer.context;
+// shut firefox up
+ctx.getShaderInfoLog = function () { return '' };
+
 var controls = new THREE.TrackballControls( camera );
 controls.rotateSpeed = 1.5;
 controls.zoomSpeed = 1.2;
@@ -36,10 +45,7 @@ controls.addEventListener( 'change', render );
 var scene = new THREE.Scene();
 
 // the camera starts at 0,0,0 so pull it back
-camera.position.z = 300;
-
-// Add the camera to the scene.
-//scene.add(camera);
+camera.position.z = 600;
 
 // Start the renderer.
 renderer.setSize(WIDTH, HEIGHT);
@@ -84,10 +90,6 @@ var RINGS = 32;
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 displacement = new Float32Array( geometry.attributes.position.count );
 
-// for (var i = 0; i < displacement.length; i++){
-//   displacement[i] = Math.random()*10;
-// }
-
 geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
 sphere = new THREE.Mesh( geometry, shaderMaterial );
 
@@ -100,13 +102,12 @@ function update () {
 
   var time = Date.now() * 0.01;
 
-  //uniforms.amplitude.value = Math.sin(time);
+  var scaling = document.getElementById("radius-slider").value;
 
-  //sphere.rotateZ(0.01);
+  sphere.scale.set(scaling, scaling, scaling);
 
-  // // sphere.geometry.attributes.displacement.needsUpdate = true;
-  //
-  // sphere.geometry.getAttribute('displacement').needsUpdate = true;
+  // Refresh noise value from the slider
+  uniforms.amplitude.value = document.getElementById("amp-slider").value;
 
   controls.update();
 
@@ -121,4 +122,5 @@ function render() {
   renderer.render(scene, camera);
 }
 
+init();
 update();
