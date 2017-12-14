@@ -1,39 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Milky Way Mania</title>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="style.css" type="text/css">
-  <script type="text/javascript" src="./gl-matrix-master/dist/gl-matrix.js"></script>
-  <script type="text/javascript" src="./three.js-master/build/three.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-  <script src="./js/TrackballControls.js"></script>
-  <!-- <script type="text/javascript" src="./planetRendering.js"></script> -->
-</head>
-
-<body>
-  <div id="container">
-    <!-- The canvas where the rendering takes place -->
-  </div>
-
-</body>
-
-<!-- Shaders -->
-<script type="x-shader/x-vertex" id="vertexshader">
-
-// switch on high precision floats
-#ifdef GL_ES
-precision highp float;
-#endif
-
-uniform float amplitude;
-attribute float displacement;
-varying vec3 vNormal;
-varying vec3 pos;
-varying vec3 vPos;
-
-
-
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -138,7 +102,7 @@ float cnoise(vec3 P)
   vec3 fade_xyz = fade(Pf0);
   vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
   vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
+  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
   return 2.2 * n_xyz;
 }
 
@@ -208,58 +172,6 @@ float pnoise(vec3 P, vec3 rep)
   vec3 fade_xyz = fade(Pf0);
   vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
   vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
+  float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
   return 2.2 * n_xyz;
 }
-void main()
-{
-  // vNormal = normal;
-  vNormal = normalMatrix * normal;
-  vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
-  vec3 newPosition = position + normal * vec3( amplitude*(3.0*cnoise(position)));
-  pos = newPosition;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-}
-
-</script>
-<script type="x-shader/x-fragment" id="fragmentshader">
-
-#ifdef GL_ES
-precision highp float;
-#endif
-
-// same name and type as VS
-varying vec3 vNormal;
-varying vec3 vPos;
-varying vec3 pos;
-
-
-void main()
-{
-  // calc the dot product and clamp 0 -> 1 rather than -1 -> 1
-  vec3 light = vec3(0.5, 0.2, 1.0);
-
-  // ensure it's normalized
-  light = normalize(light);
-
-  // calculate the dot product of the light to the vertex normal
-  float dProd = max(0.0, dot(vNormal, light));
-
-  vec4 col = vec4(0.8, 0.5, 0.1, 1.0);
-
-  // Divide by length to normalize the color. Length = radius of the sphere
-  col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
-
-  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
-
-  vec4 final = col * prod;
-  gl_FragColor 	= final;
-}
-
-</script>
-<!-- End Shaders -->
-
-<!-- Launch the loop -->
-<script type="text/javascript" src="./main.js"></script>
-
-</html>

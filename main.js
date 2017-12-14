@@ -78,15 +78,15 @@ var shaderMaterial = new THREE.ShaderMaterial({
 
 // Set up the sphere vars
 var RADIUS = 50;
-var SEGMENTS = 16;
-var RINGS = 16;
+var SEGMENTS = 32;
+var RINGS = 32;
 
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 displacement = new Float32Array( geometry.attributes.position.count );
 
-for (var i = 0; i < displacement.length; i++){
-  displacement[i] = Math.random()*10;
-}
+// for (var i = 0; i < displacement.length; i++){
+//   displacement[i] = Math.random()*10;
+// }
 
 geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
 sphere = new THREE.Mesh( geometry, shaderMaterial );
