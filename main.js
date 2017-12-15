@@ -80,6 +80,21 @@ uniforms.amplitude = {
   value: 1
 };
 
+uniforms.planetRadius = {
+  type: 'f', // a float
+  value: 1
+};
+
+var wateruniforms = THREE.UniformsUtils.merge( [
+
+  THREE.UniformsLib[ "lights" ]
+
+] );
+
+wateruniforms.waterLevel = {
+  type: 'f', // a float
+  value: 1
+}
 
 
 // create the sphere's material
@@ -90,10 +105,17 @@ var shaderMaterial = new THREE.ShaderMaterial({
   lights:         true
 });
 
+var waterShaderMaterial = new THREE.ShaderMaterial({
+  uniforms:       wateruniforms,
+  vertexShader:   $('#watervertexshader').text(),
+  fragmentShader: $('#waterfragmentshader').text(),
+  lights:         true
+});
+
 // Set up the sphere vars
 var RADIUS = 50;
-var SEGMENTS = 128;
-var RINGS = 128;
+var SEGMENTS = 256;
+var RINGS = 256;
 
 uniforms.radius = {
   type: 'f',
@@ -103,21 +125,27 @@ uniforms.radius = {
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 displacement = new Float32Array( geometry.attributes.position.count );
 
-geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
-sphere = new THREE.Mesh( geometry, shaderMaterial );
+var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 
+geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
+
+sphere = new THREE.Mesh( geometry, shaderMaterial );
+waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
 
 // Add  to the scene.
 scene.add(sphere);
+scene.add(waterSphere);
 scene.add(camera);
 
 function update () {
 
   var time = Date.now() * 0.01;
 
-  var scaling = document.getElementById("radius-slider").value;
+  uniforms.planetRadius.value = document.getElementById("radius-slider").value;
 
-  sphere.scale.set(scaling, scaling, scaling);
+
+
+  //sphere.scale.set(scaling, scaling, scaling);
 
   // Update the radius
   //uniforms.radius.value = RADIUS * scaling;
@@ -125,6 +153,9 @@ function update () {
   // Refresh noise value from the slider
   uniforms.amplitude.value = document.getElementById("amp-slider").value;
   uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
+
+  // Water
+  wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
 
   controls.update();
 
