@@ -80,6 +80,8 @@ uniforms.amplitude = {
   value: 1
 };
 
+
+
 // create the sphere's material
 var shaderMaterial = new THREE.ShaderMaterial({
   uniforms:       uniforms,
@@ -92,6 +94,11 @@ var shaderMaterial = new THREE.ShaderMaterial({
 var RADIUS = 50;
 var SEGMENTS = 128;
 var RINGS = 128;
+
+uniforms.radius = {
+  type: 'f',
+  value: RADIUS
+}
 
 var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
 displacement = new Float32Array( geometry.attributes.position.count );
@@ -111,6 +118,9 @@ function update () {
   var scaling = document.getElementById("radius-slider").value;
 
   sphere.scale.set(scaling, scaling, scaling);
+
+  // Update the radius
+  //uniforms.radius.value = RADIUS * scaling;
 
   // Refresh noise value from the slider
   uniforms.amplitude.value = document.getElementById("amp-slider").value;

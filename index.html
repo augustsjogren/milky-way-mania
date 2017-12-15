@@ -248,6 +248,8 @@ varying vec3 vNormal;
 varying vec3 vPos;
 varying vec3 pos;
 
+uniform float radius;
+
 
 void main()
 {
@@ -260,10 +262,14 @@ void main()
   // calculate the dot product of the light to the vertex normal
   float dProd = max(0.0, dot(vNormal, light));
 
-  vec4 col = vec4(0.8, 0.5, 0.1, 1.0);
+  vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
+
+  if(abs(length(pos)) > radius + 1.0){
+    col = vec4(0.6, 0.6, 0.6, 1.0);
+  }
 
   // Divide by length to normalize the color. Length = radius of the sphere
-  col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
+  //col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
 
   vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
