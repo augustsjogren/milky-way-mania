@@ -2,6 +2,7 @@ function init(){
   document.getElementById("amp-slider").value = 0.0;
   document.getElementById("amp-small-slider").value = 0.0;
   document.getElementById("radius-slider").value = 1.0;
+  document.getElementById("valley-slider").value = 0.0;
 }
 
 // Set the scene size.
@@ -80,6 +81,11 @@ uniforms.amplitude = {
   value: 1
 };
 
+uniforms.valleys = {
+  type: 'f', // a float
+  value: 1
+};
+
 uniforms.planetRadius = {
   type: 'f', // a float
   value: 1
@@ -114,8 +120,8 @@ var waterShaderMaterial = new THREE.ShaderMaterial({
 
 // Set up the sphere vars
 var RADIUS = 50;
-var SEGMENTS = 256;
-var RINGS = 256;
+var SEGMENTS = 512;
+var RINGS = 512;
 
 uniforms.radius = {
   type: 'f',
@@ -141,17 +147,13 @@ function update () {
 
   var time = Date.now() * 0.01;
 
+  // Radius
   uniforms.planetRadius.value = document.getElementById("radius-slider").value;
 
-
-
-  //sphere.scale.set(scaling, scaling, scaling);
-
-  // Update the radius
-  //uniforms.radius.value = RADIUS * scaling;
-
-  // Refresh noise value from the slider
+  // Refresh noise values from the sliders
   uniforms.amplitude.value = document.getElementById("amp-slider").value;
+  uniforms.valleys.value = document.getElementById("valley-slider").value;
+
   uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
 
   // Water
