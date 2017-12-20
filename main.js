@@ -102,6 +102,11 @@ wateruniforms.waterLevel = {
   value: 1
 }
 
+wateruniforms.planetRadiusWater = {
+  type: 'f', // a float
+  value: 1
+};
+
 
 // create the sphere's material
 var shaderMaterial = new THREE.ShaderMaterial({
@@ -150,6 +155,7 @@ function update () {
   // Radius
   uniforms.planetRadius.value = document.getElementById("radius-slider").value;
 
+
   // Refresh noise values from the sliders
   uniforms.amplitude.value = document.getElementById("amp-slider").value;
   uniforms.valleys.value = document.getElementById("valley-slider").value;
@@ -158,7 +164,7 @@ function update () {
 
   // Water
   wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
-
+  wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
   controls.update();
 
   render();

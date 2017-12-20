@@ -498,12 +498,13 @@ precision highp float;
 #endif
 
 uniform float waterLevel;
+uniform float planetRadiusWater;
 
 void main(){
 
    //position + normal * vec3((largeNoise + smallNoise));
 
-  vec3 newPosition = position + normal * vec3(waterLevel, waterLevel, waterLevel);
+  vec3 newPosition = position + normal * vec3(waterLevel, waterLevel, waterLevel) * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
@@ -518,8 +519,6 @@ precision highp float;
 void main(){
   gl_FragColor 	= vec4(0.2, 0.2, 0.8, 1.0);
 }
-
-
 </script>
 <!-- End Shaders -->
 
