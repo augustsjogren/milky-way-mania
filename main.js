@@ -45,7 +45,6 @@ controls.keys = [ 65, 83, 68 ];
 controls.addEventListener( 'change', render );
 
 
-
 var orbitControls = new THREE.OrbitControls( camera, renderer.domElement );
 orbitControls.addEventListener( 'change', render ); // remove when using animation loop
 // enable animation loop when using damping or autorotation
@@ -117,79 +116,93 @@ wateruniforms.planetRadiusWater = {
   value: 1
 };
 
-
-// create the sphere's material
-var shaderMaterial = new THREE.ShaderMaterial({
-  uniforms:       uniforms,
-  vertexShader:   $('#vertexshader').text(),
-  fragmentShader: $('#fragmentshader').text(),
-  lights:         true
-});
-
-var waterShaderMaterial = new THREE.ShaderMaterial({
-  uniforms:       wateruniforms,
-  vertexShader:   $('#watervertexshader').text(),
-  fragmentShader: $('#waterfragmentshader').text(),
-  lights:         true
-});
-
-// Set up the sphere vars
-var RADIUS = 50;
-var SEGMENTS = 512;
-var RINGS = 512;
-
-uniforms.radius = {
-  type: 'f',
-  value: RADIUS
-}
-
-var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
-displacement = new Float32Array( geometry.attributes.position.count );
-
-var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
-
-geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
-
-sphere = new THREE.Mesh( geometry, shaderMaterial );
-waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
-
-// Add  to the scene.
-scene.add(sphere);
-scene.add(waterSphere);
-scene.add(camera);
-
-function update () {
-
-  var time = Date.now() * 0.01;
-
-  // Radius
-  uniforms.planetRadius.value = document.getElementById("radius-slider").value;
-
-
-  // Refresh noise values from the sliders
-  uniforms.amplitude.value = document.getElementById("amp-slider").value;
-  uniforms.valleys.value = document.getElementById("valley-slider").value;
-
-  uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
-
-  // Water
-  wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
-  wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
-
-  // Navigation
-  controls.update();
-  //orbitControls.update();
-
-  render();
-
-  // Schedule the next frame.
-  requestAnimationFrame(update);
-}
-
 function render() {
   // Draw!
   renderer.render(scene, camera);
 }
 
-init();
-update();
+// Load the shaders from files
+ShaderLoader("shaders/vertex_planet.vert", "shaders/fragment_planet.frag",
+
+  function (vertex, fragment) {
+
+    // create the sphere's material
+    var shaderMaterial = new THREE.ShaderMaterial({
+      uniforms:       uniforms,
+      // vertexShader:   $('#vertexshader').text(),
+      vertexShader:   vertex,
+      // fragmentShader: $('#fragmentshader').text(),
+      fragmentShader: fragment,
+      lights:         true
+    });
+
+    var waterShaderMaterial = new THREE.ShaderMaterial({
+      uniforms:       wateruniforms,
+      vertexShader:   $('#watervertexshader').text(),
+      fragmentShader: $('#waterfragmentshader').text(),
+      lights:         true
+    });
+
+    // Set up the sphere vars
+    var RADIUS = 50;
+    var SEGMENTS = 512;
+    var RINGS = 512;
+
+    uniforms.radius = {
+      type: 'f',
+      value: RADIUS
+    }
+
+    var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
+    displacement = new Float32Array( geometry.attributes.position.count );
+
+    var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
+
+    geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
+
+    sphere = new THREE.Mesh( geometry, shaderMaterial );
+    waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
+
+    // Add  to the scene.
+    scene.add(sphere);
+    scene.add(waterSphere);
+    scene.add(camera);
+
+    function update () {
+
+      var time = Date.now() * 0.01;
+
+      // Radius
+      uniforms.planetRadius.value = document.getElementById("radius-slider").value;
+
+
+      // Refresh noise values from the sliders
+      uniforms.amplitude.value = document.getElementById("amp-slider").value;
+      uniforms.valleys.value = document.getElementById("valley-slider").value;
+
+      uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
+
+      // Water
+      wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
+      wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
+
+      // Navigation
+      controls.update();
+      //orbitControls.update();
+
+      render();
+
+      // Schedule the next frame.
+      requestAnimationFrame(update);
+    }
+
+    // function render() {
+    //   // Draw!
+    //   renderer.render(scene, camera);
+    // }
+
+    init();
+    update();
+
+  }
+)
