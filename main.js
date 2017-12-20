@@ -44,6 +44,15 @@ controls.dynamicDampingFactor = 0.3;
 controls.keys = [ 65, 83, 68 ];
 controls.addEventListener( 'change', render );
 
+
+
+var orbitControls = new THREE.OrbitControls( camera, renderer.domElement );
+orbitControls.addEventListener( 'change', render ); // remove when using animation loop
+// enable animation loop when using damping or autorotation
+//controls.enableDamping = true;
+//controls.dampingFactor = 0.25;
+orbitControls.enableZoom = false;
+
 var scene = new THREE.Scene();
 
 // the camera starts at 0,0,0 so pull it back
@@ -58,9 +67,10 @@ $container.append(renderer.domElement);
 
 // Unused for now
 var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
-var pointLight = new THREE.PointLight( 0xff0000, 1.0, 0 );
-pointLight.position.set(250, 0, 100);
-//scene.add( pointLight );
+
+var pointLight = new THREE.PointLight( 0xffffff, 1.0, 0 );
+pointLight.position.set(100, 0, 100);
+scene.add( pointLight );
 //scene.add( light );
 
 // Light stuff
@@ -165,7 +175,10 @@ function update () {
   // Water
   wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
   wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
+
+  // Navigation
   controls.update();
+  //orbitControls.update();
 
   render();
 

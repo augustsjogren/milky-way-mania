@@ -8,6 +8,7 @@
   <script type="text/javascript" src="./three.js-master/build/three.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   <script src="./js/TrackballControls.js"></script>
+  <script src="./three.js-master/examples/js/controls/OrbitControls.js"></script>
   <script src="./js/functions.js"></script>
   <!-- <script type="text/javascript" src="./planetRendering.js"></script> -->
 </head>
@@ -262,6 +263,13 @@ varying vec3 pos;
 uniform float radius;
 uniform float planetRadius;
 
+struct PointLight {
+  vec3 position;
+  vec3 color;
+};
+
+uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
+
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -468,13 +476,6 @@ void main()
   float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
   vec4 snowMix = mix(col, snow , temo );
 
-  // if(abs(length(pos)) > (radius * planetRadius + 3.0)){
-  //   col = vec4(1.6, 1.6, 1.6, 1.0);
-  // }
-  // else if (abs(length(pos)) < radius - 0.2 ) {
-  //   col = vec4(0.2, 0.2, 0.8, 1.0);
-  // }
-
   float val = cnoise(0.05  * vPos);
 
   vec4 mixCol = mix(snowMix, desertColor, val);
@@ -484,8 +485,20 @@ void main()
 
   vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
-  vec4 final = mixCol * prod;
-  gl_FragColor 	= final;
+
+  //----------------------------LIGHTS-----------------------------------
+
+  vec4 addedLights = vec4(0.1, 0.1, 0.1, 1.0);
+  for(int l = 0; l < NUM_POINT_LIGHTS; l++) {
+    vec3 adjustedLight = pointLights[l].position + cameraPosition;
+    vec3 lightDirection = normalize(vPos - adjustedLight);
+    addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0) * pointLights[l].color;
+  }
+
+  // vec4 final = mixCol * prod;
+  vec4 final = mixCol;
+  //gl_FragColor 	= final;
+  gl_FragColor 	= addedLights * final;
 }
 
 </script>
@@ -497,10 +510,16 @@ void main()
 precision highp float;
 #endif
 
+varying vec3 vPos;
+varying vec3 vNormal;
+
 uniform float waterLevel;
 uniform float planetRadiusWater;
 
 void main(){
+
+  vNormal = normalMatrix * normal;
+  vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
 
    //position + normal * vec3((largeNoise + smallNoise));
 
@@ -516,8 +535,29 @@ void main(){
 precision highp float;
 #endif
 
+varying vec3 vPos;
+varying vec3 vNormal;
+
+struct PointLight {
+  vec3 position;
+  vec3 color;
+};
+
+uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
+
 void main(){
-  gl_FragColor 	= vec4(0.2, 0.2, 0.8, 1.0);
+
+   vec4 addedLights = vec4(0.1, 0.1, 0.1, 1.0);
+
+  for(int l = 0; l < NUM_POINT_LIGHTS; l++) {
+    vec3 adjustedLight = pointLights[l].position + cameraPosition;
+    vec3 lightDirection = normalize(vPos - adjustedLight);
+    addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0) * pointLights[l].color;
+  }
+
+  vec4 waterColor = vec4(0.2, 0.2, 0.8, 1.0);
+
+  gl_FragColor 	= waterColor * addedLights;
 }
 </script>
 <!-- End Shaders -->
