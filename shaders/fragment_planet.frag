@@ -226,11 +226,11 @@ void main()
   vec3 L = normalize(lightPos - vPos);
   //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
 
-  // // ensure it's normalized
-  // lightPos = normalize(lightPos);
-  //
-  // // calculate the dot product of the light to the vertex normal
-  // float dProd = max(0.0, dot(vNormal, lightPos));
+  // ensure it's normalized
+  //lightPos = normalize(lightPos);
+
+  // calculate the dot product of the light to the vertex normal
+  float dProd = max(0.0, dot(vNormal, lightPos));
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);
@@ -271,7 +271,7 @@ void main()
   // Divide by length to normalize the color. Length = radius of the sphere
   //col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
 
-  //vec4 prod = vec4(dProd, dProd, dProd, 1.0);
+  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
 
   //----------------------------LIGHTS-----------------------------------
@@ -291,7 +291,7 @@ void main()
   vec3 third = vec3(Ks * specular * specularColor);
 
 
-  gl_FragColor = vec4(first + second + third , 1.0);
+  gl_FragColor = vec4(first + second , 1.0);
   //gl_FragColor = vec4(Ka * ambientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor, 1.0);
 
   //gl_FragColor 	= prod * final;

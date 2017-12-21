@@ -39,8 +39,8 @@ controls.zoomSpeed = 1.2;
 controls.panSpeed = 1.0;
 controls.noZoom = false;
 controls.noPan = false;
-controls.staticMoving = true;
-controls.dynamicDampingFactor = 0.3;
+controls.staticMoving = false;
+controls.dynamicDampingFactor = 0.02;
 controls.keys = [ 65, 83, 68 ];
 controls.addEventListener( 'change', render );
 
@@ -119,6 +119,11 @@ wateruniforms.waterLevel = {
 wateruniforms.planetRadiusWater = {
   type: 'f', // a float
   value: 1
+};
+
+wateruniforms.lightPosition = {
+  type: 'v3',
+  value: new THREE.Vector3(80.0, 80.0, 80.0)
 };
 
 function render() {

@@ -206,7 +206,7 @@ void main()
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
 
-  vLightPosition = lightPosition;
+  vLightPosition = vec3( vec4( lightPosition, 1.0) * modelViewMatrix);
 
   mMatrix = modelMatrix;
   mvMatrix = modelViewMatrix;
