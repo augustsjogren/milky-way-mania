@@ -55,7 +55,10 @@ void main(){
 
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
-  vec3 newPosition = position + normal * vec3(waterLevel, waterLevel, waterLevel) * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
+
+  // First scale the sphere along with the planet, and then adjust the sea level
+  vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
+  vec3 newPosition = newRadius + normal * vec3(waterLevel);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
@@ -97,7 +100,11 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-   vec4 waterColor = vec4(0.2, 0.2, 0.8, 1.0);
+  vec4 waterColor = vec4(0.2, 0.2, 0.8, 1.0);
+  vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
+
+  //TODO: Brighter water in shallower parts
+
   vec4 ambientColor = waterColor*0.2;
   vec4 diffuseColor = waterColor;
   vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);

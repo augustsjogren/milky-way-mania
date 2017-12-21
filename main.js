@@ -40,7 +40,7 @@ controls.panSpeed = 1.0;
 controls.noZoom = false;
 controls.noPan = false;
 controls.staticMoving = false;
-controls.dynamicDampingFactor = 0.02;
+controls.dynamicDampingFactor = 0.1;
 controls.keys = [ 65, 83, 68 ];
 controls.addEventListener( 'change', render );
 
