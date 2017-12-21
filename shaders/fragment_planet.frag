@@ -2,6 +2,8 @@
 precision highp float;
 #endif
 
+#extension GL_OES_standard_derivatives : enable
+
 // same name and type as VS
 varying vec3 vNormal;
 varying vec3 nNormal;
@@ -11,6 +13,8 @@ varying vec3 pos;
 varying mat4 mMatrix;
 varying mat4 mvMatrix;
 varying mat3 nMatrix;
+
+varying vec3 vViewPosition;
 
 varying vec3 vLightPosition;
 
@@ -211,14 +215,17 @@ void main()
   float Ks = 0.6;   // Specular reflection coefficient
   float shininessVal = 2.0; // Shininess
 
-  vec3 lightPos = vec3(40.0, 40.0, 40.0);
-
   // From vshader
-  lightPos = vLightPosition;
+  vec3 lightPos = vLightPosition;
 
   vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
 
-  vec3 N = normalize(vNormal);
+  vec3 newnormal = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
+
+  // vNormal = newnormal;
+
+  vec3 N = normalize(newnormal);
+  //vec3 N = newnormal;
   vec3 L = normalize(lightPos - vPos);
   //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
 
@@ -226,7 +233,7 @@ void main()
   //lightPos = normalize(lightPos);
 
   // calculate the dot product of the light to the vertex normal
-  float dProd = max(0.0, dot(vNormal, lightPos));
+  //float dProd = max(0.0, dot(vNormal, lightPos));
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);
@@ -264,10 +271,7 @@ void main()
 
   vec4 mixCol = mix(snowMix, desertColor , val);
 
-  // Divide by length to normalize the color. Length = radius of the sphere
-  //col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
-
-  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
+//  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
 
   //----------------------------LIGHTS-----------------------------------
