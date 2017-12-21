@@ -8,11 +8,20 @@ uniform float valleys;
 uniform float smallAmplitude;
 uniform float planetRadius;
 
+uniform vec3 lightPosition;
+
 attribute float displacement;
 
 varying vec3 vNormal;
+varying vec3 nNormal;
 varying vec3 pos;
 varying vec3 vPos;
+
+varying mat4 mMatrix;
+varying mat4 mvMatrix;
+varying mat3 nMatrix;
+
+varying vec3 vLightPosition;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -197,6 +206,13 @@ void main()
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
 
+  vLightPosition = lightPosition;
+
+  mMatrix = modelMatrix;
+  mvMatrix = modelViewMatrix;
+  nMatrix = normalMatrix;
+  nNormal = normal;
+
   // Clamp is used to prevent negative elevation
   float largeNoise = amplitude*clamp(cnoise(0.08*position), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(cnoise(0.8*position), -0.5, 100.0);
@@ -208,5 +224,8 @@ void main()
   vec3 newPosition = newRadius + normal * vec3((largeNoise + valleyNoise + smallNoise));
 
   pos = newPosition;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+
+  vPos = (modelMatrix * vec4(pos, 1.0 )).xyz;
+  gl_Position = projectionMatrix * viewMatrix * vec4(vPos, 1.0);
+  //gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }

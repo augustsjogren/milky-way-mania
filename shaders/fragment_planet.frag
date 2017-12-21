@@ -4,8 +4,15 @@ precision highp float;
 
 // same name and type as VS
 varying vec3 vNormal;
+varying vec3 nNormal;
 varying vec3 vPos;
 varying vec3 pos;
+
+varying mat4 mMatrix;
+varying mat4 mvMatrix;
+varying mat3 nMatrix;
+
+varying vec3 vLightPosition;
 
 uniform float radius;
 uniform float planetRadius;
@@ -197,14 +204,46 @@ float pnoise(vec3 P, vec3 rep)
 
 void main()
 {
-  // calc the dot product and clamp 0 -> 1 rather than -1 -> 1
-  vec3 light = vec3(1.0, 0.4, 2.0);
 
-  // ensure it's normalized
-  light = normalize(light);
+  float Ka = 1.0;   // Ambient reflection coefficient
+  float Kd = 1.0;   // Diffuse reflection coefficient
+  float Ks = 1.0;   // Specular reflection coefficient
+  float shininessVal = 50.0; // Shininess
 
-  // calculate the dot product of the light to the vertex normal
-  float dProd = max(0.0, dot(vNormal, light));
+  vec3 lightPos = vec3(40.0, 40.0, 40.0);
+
+  // From vshader
+  lightPos = vLightPosition;
+
+  //lightPos = cameraPosition;
+
+  //lightPos = vec3(vec4(lightPos, 1.0) * mMatrix);
+
+  vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
+
+  vec3 N = normalize(vNormal);
+  vec3 L = normalize(lightPos - vPos);
+  //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
+
+  // // ensure it's normalized
+  // lightPos = normalize(lightPos);
+  //
+  // // calculate the dot product of the light to the vertex normal
+  // float dProd = max(0.0, dot(vNormal, lightPos));
+
+  // Lambert's cosine law, calculate the dot product of the light to the vertex normal
+  float lambertian = max(dot(N, L), 0.0);
+
+  float specular = 0.0;
+
+  if(lambertian > 0.0) {
+    vec3 R = reflect(-L, N);      // Reflected light vector
+    vec3 V = normalize(-vPos); // Vector to viewer
+
+    // Compute the specular term
+    float specAngle = max(dot(R, V), 0.0);
+    specular = pow(specAngle, shininessVal);
+  }
 
   // Yellow
   vec4 desertColor = vec4(1.0, 1.0, 0.2, 1.0);
@@ -223,27 +262,35 @@ void main()
   float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
   vec4 snowMix = mix(col, snow , temo );
 
-  float val = cnoise(0.05  * vPos);
+  float val = cnoise(0.05  * vec3( vec4(vPos, 1.0) * mMatrix));
 
   vec4 mixCol = mix(snowMix, desertColor, val);
 
   // Divide by length to normalize the color. Length = radius of the sphere
   //col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));
 
-  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
+  //vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
 
   //----------------------------LIGHTS-----------------------------------
 
-  vec4 addedLights = vec4(0.1, 0.1, 0.1, 1.0);
-  for(int l = 0; l < NUM_POINT_LIGHTS; l++) {
-    vec3 adjustedLight = pointLights[l].position + cameraPosition;
-    vec3 lightDirection = normalize(vPos - adjustedLight);
-    addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0) * pointLights[l].color;
-  }
+
 
   // vec4 final = mixCol * prod;
   vec4 final = mixCol;
   //gl_FragColor 	= final;
-  gl_FragColor 	= addedLights * final;
+
+  vec4 ambientColor = final*0.2;
+  vec4 diffuseColor = final;
+  vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+  vec3 first = vec3(Ka * ambientColor);
+  vec3 second = vec3(Kd * lambertian * diffuseColor);
+  vec3 third = vec3(Ks * specular * specularColor);
+
+
+  gl_FragColor = vec4(first + second + third , 1.0);
+  //gl_FragColor = vec4(Ka * ambientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor, 1.0);
+
+  //gl_FragColor 	= prod * final;
 }
