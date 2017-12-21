@@ -95,6 +95,11 @@ uniforms.valleys = {
   value: 1
 };
 
+uniforms.snowLevel = {
+  type: 'f', // a float
+  value: 1
+};
+
 uniforms.planetRadius = {
   type: 'f', // a float
   value: 1
@@ -151,7 +156,7 @@ function (vertex, fragment) {
   });
 
   // Set up the sphere vars
-  var RADIUS = 50;
+  var RADIUS = 80;
   var SEGMENTS = 512;
   var RINGS = 512;
 
@@ -188,12 +193,9 @@ function (vertex, fragment) {
   var pivot1 = new THREE.Object3D();
   pivot1.rotation.z = 0;
   parent.add(pivot1);
-  sphere2.position.x = 100;
+  sphere2.position.x = 150;
   pivot1.add(sphere2);
   //pivot1.add(sphere3);
-
-  //sphere2.position.set(uniforms.lightPosition.value.x, uniforms.lightPosition.value.y, uniforms.lightPosition.value.z);
-  //sphere2.translateX(40);
 
   // Add  to the scene.
   scene.add(sphere);
@@ -210,7 +212,7 @@ function (vertex, fragment) {
     // Radius
     uniforms.planetRadius.value = document.getElementById("radius-slider").value;
 
-    sphere.rotateY(0.005);
+    // sphere.rotateY(0.005);
 
       parent.rotation.z += 0.01;
     // sphere2.translateX(40);
@@ -220,9 +222,9 @@ function (vertex, fragment) {
     // Refresh noise values from the sliders
     uniforms.amplitude.value = document.getElementById("amp-slider").value;
     uniforms.valleys.value = document.getElementById("valley-slider").value;
-
-
     uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
+
+    uniforms.snowLevel.value = document.getElementById('snow-slider').value;
 
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;

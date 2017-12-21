@@ -16,6 +16,7 @@ varying vec3 vLightPosition;
 
 uniform float radius;
 uniform float planetRadius;
+uniform float snowLevel;
 
 struct PointLight {
   vec3 position;
@@ -205,10 +206,10 @@ float pnoise(vec3 P, vec3 rep)
 void main()
 {
 
-  float Ka = 1.0;   // Ambient reflection coefficient
-  float Kd = 1.0;   // Diffuse reflection coefficient
-  float Ks = 1.0;   // Specular reflection coefficient
-  float shininessVal = 50.0; // Shininess
+  float Ka = 0.8;   // Ambient reflection coefficient
+  float Kd = 0.6;   // Diffuse reflection coefficient
+  float Ks = 0.6;   // Specular reflection coefficient
+  float shininessVal = 2.0; // Shininess
 
   vec3 lightPos = vec3(40.0, 40.0, 40.0);
 
@@ -252,19 +253,20 @@ void main()
   vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
 
   // White
-  vec4 snow = vec4(0.9, 0.9, 0.9, 1.0);
+  vec4 snow = vec4(0.8, 0.8, 0.8, 0.99);
 
   // Adjusts how high in the terrain snow appears
   float snowOffset = 4.0;
+  snowOffset = snowLevel;
 
   // Clamp makes sure no black valleys appear
   // This mixing creates snow on the mountains but not on the ground
-  float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
+  float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 10.0 );
   vec4 snowMix = mix(col, snow , temo );
 
   float val = cnoise(0.05  * vec3( vec4(vPos, 1.0) * mMatrix));
 
-  vec4 mixCol = mix(snowMix, desertColor, val);
+  vec4 mixCol = mix(snowMix, snowMix, val);
 
   // Divide by length to normalize the color. Length = radius of the sphere
   //col.x = col.x * (1.0 - (abs(vPos.x) / length(vPos)));

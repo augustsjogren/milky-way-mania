@@ -217,11 +217,13 @@ void main()
   float largeNoise = amplitude*clamp(cnoise(0.08*position), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(cnoise(0.8*position), -0.5, 100.0);
 
-  float valleyNoise = valleys * clamp(cnoise(0.07*position),-planetRadius, 0.0);
+  float valleyNoise = valleys * clamp(cnoise(0.04*position),-planetRadius, 0.0);
 
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
 
-  vec3 newPosition = newRadius + normal * vec3((largeNoise + valleyNoise + smallNoise));
+
+ vec3 newPosition = newRadius + normal * vec3((largeNoise + valleyNoise + smallNoise));
+
 
   pos = newPosition;
 
