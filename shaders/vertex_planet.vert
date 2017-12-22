@@ -341,33 +341,38 @@ void main()
   // Scale the planet
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
 
-  // Displace the surface
-  vec3 newPosition = newRadius + normal * vec3((largeNoise + valleyNoise ));
-
+  //------Mountains------
+  // Displace the surface upwards (Mountains)
+  vec3 newPosition = newRadius + normal * vec3(largeNoise);
   // Recalculate normals for mountains
   largeGradient *= 0.08;
-
   vec3 perturbation = largeGradient - dot(largeGradient, normal) * normal;
-  vec3 gnormal = normal - amplitude * perturbation;
-  gnormal = normalize(gnormal);
+  vec3 mountainNormal = normal - amplitude * perturbation;
+  mountainNormal = normalize(mountainNormal);
 
+  //------Valleys------
+  // Displace downwards along the sphere normal (Valleys)
+  newPosition += normal * vec3(valleyNoise);
+  // Recalculate normals for valleys, using the mountain normal
+  valleyGradient *= 0.04;
+  vec3 valleyPerturbation = valleyGradient - dot(valleyGradient, mountainNormal) * mountainNormal;
+  vec3 valleyNormal = mountainNormal - valleys * valleyPerturbation;
+  valleyNormal = normalize(valleyNormal);
+
+  //------Small noise------
   // Small noise along the new normal
-  newPosition += gnormal * vec3(smallNoise);
-
+  newPosition += valleyNormal * vec3(smallNoise);
   // Recalculate normals for small noise
   smallGradient *= 0.8;
+  vec3 smallPerturbation = smallGradient - dot(smallGradient, valleyNormal) * valleyNormal;
+  vec3 finalNormal = valleyNormal - smallAmplitude * smallPerturbation;
+  finalNormal = normalize(finalNormal);
 
-  vec3 smallPerturbation = smallGradient - dot(smallGradient, gnormal) * gnormal;
-  vec3 sgnormal = gnormal - smallAmplitude * smallPerturbation;
-  sgnormal = normalize(sgnormal);
-
-   // Send to vertex shader
-  vNormal = sgnormal;
+   // Send the final normal to vertex shader
+  vNormal = finalNormal;
 
   vec4 mvPosition = modelViewMatrix * vec4( newPosition, 1.0 );
 	vViewPosition = -mvPosition.xyz;
-
-
 
   pos = newPosition;
 
