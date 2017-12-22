@@ -220,11 +220,11 @@ void main()
 
   vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
 
-  vec3 newnormal = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
+  //vec3 newnormal = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
 
   // vNormal = newnormal;
 
-  vec3 N = normalize(newnormal);
+  vec3 N = normalize(vNormal);
   //vec3 N = newnormal;
   vec3 L = normalize(lightPos - vPos);
   //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
@@ -270,6 +270,7 @@ void main()
   float val = cnoise(0.05  * vec3( vec4(vPos, 1.0) * mMatrix));
 
   vec4 mixCol = mix(snowMix, desertColor , val);
+  // vec4 mixCol = mix(snowMix, snowMix , val);
 
 //  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
 
