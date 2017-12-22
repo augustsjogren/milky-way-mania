@@ -328,31 +328,46 @@ void main()
   nMatrix = normalMatrix;
   nNormal = normal;
 
-  vec3 gradient = vec3(0.0);
+  vec3 largeGradient = vec3(0.0);
+  vec3 smallGradient = vec3(0.0);
+  vec3 valleyGradient = vec3(0.0);
 
   // Clamp is used to prevent negative elevation
   // float largeNoise = amplitude*clamp(cnoise(0.08*position), -100.0, 100.0);
-  float largeNoise = amplitude*clamp(snoise(0.08*position, gradient), 0.0, 100.0);
-  float smallNoise = 5.0*smallAmplitude*clamp(cnoise(0.8*position), -0.5, 100.0);
-  float valleyNoise = valleys * clamp(cnoise(0.04*position),-planetRadius, 0.0);
+  float largeNoise = amplitude*clamp(snoise(0.08*position, largeGradient), 0.0, 100.0);
+  float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
+  float valleyNoise = valleys * clamp(snoise(0.04*position, valleyGradient),-planetRadius, 0.0);
 
+  // Scale the planet
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
 
+  // Displace the surface
   vec3 newPosition = newRadius + normal * vec3((largeNoise + valleyNoise ));
 
-  // Recalculate normals
-  gradient *= 0.08;
+  // Recalculate normals for mountains
+  largeGradient *= 0.08;
 
-   vec3 perturbation = gradient - dot(gradient, normal) * normal;
-   vec3 gnormal = normal - amplitude * perturbation;
-   gnormal = normalize(gnormal);
+  vec3 perturbation = largeGradient - dot(largeGradient, normal) * normal;
+  vec3 gnormal = normal - amplitude * perturbation;
+  gnormal = normalize(gnormal);
+
+  // Small noise along the new normal
+  newPosition += gnormal * vec3(smallNoise);
+
+  // Recalculate normals for small noise
+  smallGradient *= 0.8;
+
+  vec3 smallPerturbation = smallGradient - dot(smallGradient, gnormal) * gnormal;
+  vec3 sgnormal = gnormal - smallAmplitude * smallPerturbation;
+  sgnormal = normalize(sgnormal);
+
+   // Send to vertex shader
+  vNormal = sgnormal;
 
   vec4 mvPosition = modelViewMatrix * vec4( newPosition, 1.0 );
 	vViewPosition = -mvPosition.xyz;
 
-  newPosition += gnormal * smallNoise;
 
-  vNormal = gnormal;
 
   pos = newPosition;
 
