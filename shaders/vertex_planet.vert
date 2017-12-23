@@ -334,7 +334,7 @@ void main()
 
   // Clamp is used to prevent negative elevation
   // float largeNoise = amplitude*clamp(cnoise(0.08*position), -100.0, 100.0);
-  float largeNoise = amplitude*clamp(snoise(0.08*position, largeGradient), 0.0, 100.0);
+  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = valleys * clamp(snoise(0.04*position, valleyGradient),-planetRadius, 0.0);
 
@@ -345,7 +345,7 @@ void main()
   // Displace the surface upwards (Mountains)
   vec3 newPosition = newRadius + normal * vec3(largeNoise);
   // Recalculate normals for mountains
-  largeGradient *= 0.08;
+  largeGradient *= 0.02;
   vec3 perturbation = largeGradient - dot(largeGradient, normal) * normal;
   vec3 mountainNormal = normal - amplitude * perturbation;
   mountainNormal = normalize(mountainNormal);
