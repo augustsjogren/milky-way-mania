@@ -15,11 +15,12 @@ varying mat4 mvMatrix;
 varying mat3 nMatrix;
 
 varying vec3 vViewPosition;
-
 varying vec3 vLightPosition;
 
 uniform float radius;
 uniform float planetRadius;
+uniform float vegetation;
+
 uniform float snowLevel;
 
 struct PointLight {
@@ -256,7 +257,7 @@ void main()
   vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
 
   // White
-  vec4 snow = vec4(0.8, 0.8, 0.8, 0.99);
+  vec4 snow = vec4(1.0, 1.0, 1.0, 1.0);
 
   // Adjusts how high in the terrain snow appears
   float snowOffset = 4.0;
@@ -264,26 +265,23 @@ void main()
 
   // Clamp makes sure no black valleys appear
   // This mixing creates snow on the mountains but not on the ground
-  float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 10.0 );
-  vec4 snowMix = mix(col, snow , temo );
+  float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
 
-  float val = cnoise(0.05  * vec3( vec4(vPos, 1.0) * mMatrix));
+  // Blend in the vegetation (green) to the base color
+  col = mix(desertColor, col, vegetation);
 
-  vec4 mixCol = mix(snowMix, desertColor , val);
+  float val = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
+  vec4 mixCol = mix(col, desertColor , val);
   // vec4 mixCol = mix(snowMix, snowMix , val);
 
-//  vec4 prod = vec4(dProd, dProd, dProd, 1.0);
+  // Blend in the snow
+  vec4 snowMix = mix(mixCol, snow , temo );
 
-
-  //----------------------------LIGHTS-----------------------------------
-
-  // vec4 final = mixCol * prod;
-  vec4 final = mixCol;
-  //gl_FragColor 	= final;
+  vec4 final = snowMix;
 
   vec4 ambientColor = final*0.2;
   vec4 diffuseColor = final;
-  vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);
+  vec4 specularColor = vec4(1.0, 1.0, 1.0, 1.0);
 
   vec3 first = vec3(Ka * ambientColor);
   vec3 second = vec3(Kd * lambertian * diffuseColor);

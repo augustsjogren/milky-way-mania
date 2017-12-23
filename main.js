@@ -100,6 +100,11 @@ uniforms.snowLevel = {
   value: 1
 };
 
+uniforms.vegetation = {
+  type: 'f', // a float
+  value: 1
+};
+
 uniforms.planetRadius = {
   type: 'f', // a float
   value: 1
@@ -229,7 +234,9 @@ function (vertex, fragment) {
     uniforms.valleys.value = document.getElementById("valley-slider").value;
     uniforms.smallAmplitude.value = document.getElementById('amp-small-slider').value;
 
+    // Materials
     uniforms.snowLevel.value = document.getElementById('snow-slider').value;
+    uniforms.vegetation.value = document.getElementById('vegetation-slider').value;
 
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
