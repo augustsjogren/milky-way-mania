@@ -212,7 +212,7 @@ void main()
 {
 
   float Ka = 0.6;   // Ambient reflection coefficient
-  float Kd = 0.6;   // Diffuse reflection coefficient
+  float Kd = 1.0;   // Diffuse reflection coefficient
   float Ks = 0.6;   // Specular reflection coefficient
   float shininessVal = 2.0; // Shininess
 
@@ -251,7 +251,7 @@ void main()
   }
 
   // Yellow
-  vec4 desertColor = vec4(1.0, 1.0, 0.2, 1.0);
+  vec4 desertColor = vec4(0.8, 0.8, 0.1, 1.0);
 
   // Green
   vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
@@ -268,14 +268,17 @@ void main()
   float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
 
   // Blend in the vegetation (green) to the base color
-  col = mix(desertColor, col, vegetation);
+  vec4 newCol = mix(desertColor, col, vegetation) ;
 
   float val = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
-  vec4 mixCol = mix(col, desertColor , val);
+  vec4 mixCol = mix(newCol, desertColor , val) ;
   // vec4 mixCol = mix(snowMix, snowMix , val);
 
   // Blend in the snow
+  //vec4 newmix = mix(newCol, snow , 1.0 );
   vec4 snowMix = mix(mixCol, snow , temo );
+
+  //snowMix = newmix;
 
   vec4 final = snowMix;
 
