@@ -249,7 +249,8 @@ void main()
 
   // Blend in the snow
   // This mixing creates snow on the mountains but not on the ground
-  vec4 snowMix = mix(mixCol, snow , snowBorder );
+  // Times 2 for brighter snow
+  vec4 snowMix = mix(mixCol, snow, snowBorder*2.0 );
 
   vec4 final = snowMix;
   vec4 ambientColor = final*0.2;

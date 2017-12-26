@@ -9,7 +9,7 @@ uniform float smallAmplitude;
 uniform float planetRadius;
 uniform float radius;
 uniform float snowLevel;
-
+uniform float vegetation;
 uniform vec3 lightPosition;
 
 attribute float displacement;
@@ -327,6 +327,7 @@ void main()
   float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = valleys * clamp(snoise(0.04*position, valleyGradient),-planetRadius, 0.0);
+  float vegetationNoise = (vegetation/30.0)*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
 
   // Scale the planet
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
@@ -358,8 +359,13 @@ void main()
   vec3 finalNormal = valleyNormal - smallAmplitude * smallPerturbation;
   finalNormal = normalize(finalNormal);
 
-    // Clamp makes sure no black valleys appear
-  snowBorder = clamp( abs(length(newPosition)) - (radius * planetRadius) - snowLevel, 0.0, 100.0 );
+  // Clamp makes sure no black valleys appear, and also keeps snowBorder
+  //  below 1.0 to make vegetation only appear below snow level.
+  snowBorder = clamp( abs(length(newPosition)) - (radius * planetRadius) - snowLevel, 0.0, 1.0 );
+  //vec4 snowMix = mix(mixCol, snow , snowBorder );
+
+   newPosition = mix(newPosition + finalNormal*newPosition*vec3(vegetationNoise), newPosition, snowBorder);
+  //newPosition = newPosition + finalNormal*newPosition*vec3(vegetationNoise);
 
    // Send the final normal to vertex shader
   vNormal = finalNormal;
