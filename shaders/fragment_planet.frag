@@ -10,6 +10,7 @@ varying vec3 vPos;
 varying vec3 pos;
 varying mat4 mMatrix;
 varying vec3 vLightPosition;
+varying float snowBorder;
 
 uniform float radius;
 uniform float planetRadius;
@@ -204,7 +205,6 @@ float pnoise(vec3 P, vec3 rep)
 
 void main()
 {
-
   float Ka = 0.6;   // Ambient reflection coefficient
   float Kd = 1.0;   // Diffuse reflection coefficient
   float Ks = 0.6;   // Specular reflection coefficient
@@ -216,15 +216,8 @@ void main()
   vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
 
   vec3 N = normalize(vNormal);
-  //vec3 N = newnormal;
   vec3 L = normalize(lightPos - vPos);
   //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
-
-  // ensure it's normalized
-  //lightPos = normalize(lightPos);
-
-  // calculate the dot product of the light to the vertex normal
-  //float dProd = max(0.0, dot(vNormal, lightPos));
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);
@@ -242,20 +235,10 @@ void main()
 
   // Yellow
   vec4 desertColor = vec4(0.8, 0.8, 0.1, 1.0);
-
   // Green
   vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
-
   // White
   vec4 snow = vec4(1.0, 1.0, 1.0, 1.0);
-
-  // Adjusts how high in the terrain snow appears
-  float snowOffset = 4.0;
-  snowOffset = snowLevel;
-
-  // Clamp makes sure no black valleys appear
-  // This mixing creates snow on the mountains but not on the ground
-  float temo = clamp( abs(length(pos)) - (radius * planetRadius) - snowOffset, 0.0, 100.0 );
 
   // Blend in the vegetation (green) to the base color
   vec4 newCol = mix(desertColor, col, vegetation) ;
@@ -265,13 +248,10 @@ void main()
   // vec4 mixCol = mix(snowMix, snowMix , val);
 
   // Blend in the snow
-  //vec4 newmix = mix(newCol, snow , 1.0 );
-  vec4 snowMix = mix(mixCol, snow , temo );
-
-  //snowMix = newmix;
+  // This mixing creates snow on the mountains but not on the ground
+  vec4 snowMix = mix(mixCol, snow , snowBorder );
 
   vec4 final = snowMix;
-
   vec4 ambientColor = final*0.2;
   vec4 diffuseColor = final;
   vec4 specularColor = vec4(1.0, 1.0, 1.0, 1.0);
@@ -279,7 +259,6 @@ void main()
   vec3 first = vec3(Ka * ambientColor);
   vec3 second = vec3(Kd * lambertian * diffuseColor);
   vec3 third = vec3(Ks * specular * specularColor);
-
 
   gl_FragColor = vec4(first + second , 1.0);
   //gl_FragColor = vec4(Ka * ambientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor, 1.0);

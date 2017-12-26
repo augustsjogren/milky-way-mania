@@ -7,6 +7,8 @@ uniform float amplitude;
 uniform float valleys;
 uniform float smallAmplitude;
 uniform float planetRadius;
+uniform float radius;
+uniform float snowLevel;
 
 uniform vec3 lightPosition;
 
@@ -17,6 +19,7 @@ varying vec3 pos;
 varying vec3 vPos;
 varying mat4 mMatrix;
 varying vec3 vLightPosition;
+varying float snowBorder;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -355,15 +358,14 @@ void main()
   vec3 finalNormal = valleyNormal - smallAmplitude * smallPerturbation;
   finalNormal = normalize(finalNormal);
 
+    // Clamp makes sure no black valleys appear
+  snowBorder = clamp( abs(length(newPosition)) - (radius * planetRadius) - snowLevel, 0.0, 100.0 );
+
    // Send the final normal to vertex shader
   vNormal = finalNormal;
-
-  vec4 mvPosition = modelViewMatrix * vec4( newPosition, 1.0 );
-	// vViewPosition = -mvPosition.xyz;
-
   pos = newPosition;
-
   vPos = (modelMatrix * vec4(pos, 1.0 )).xyz;
+
   gl_Position = projectionMatrix * viewMatrix * vec4(vPos, 1.0);
   //gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
