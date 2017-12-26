@@ -13,16 +13,9 @@ uniform vec3 lightPosition;
 attribute float displacement;
 
 varying vec3 vNormal;
-varying vec3 nNormal;
 varying vec3 pos;
 varying vec3 vPos;
-
 varying mat4 mMatrix;
-varying mat4 mvMatrix;
-varying mat3 nMatrix;
-
-varying vec3 vViewPosition;
-
 varying vec3 vLightPosition;
 
 //
@@ -317,16 +310,10 @@ float snoise(vec3 v, out vec3 gradient)
 
 void main()
 {
-  // vNormal = normal;
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
-
   vLightPosition = vec3( vec4( lightPosition, 1.0) * modelViewMatrix);
-
   mMatrix = modelMatrix;
-  mvMatrix = modelViewMatrix;
-  nMatrix = normalMatrix;
-  nNormal = normal;
 
   vec3 largeGradient = vec3(0.0);
   vec3 smallGradient = vec3(0.0);
@@ -372,7 +359,7 @@ void main()
   vNormal = finalNormal;
 
   vec4 mvPosition = modelViewMatrix * vec4( newPosition, 1.0 );
-	vViewPosition = -mvPosition.xyz;
+	// vViewPosition = -mvPosition.xyz;
 
   pos = newPosition;
 

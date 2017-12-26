@@ -6,15 +6,9 @@ precision highp float;
 
 // same name and type as VS
 varying vec3 vNormal;
-varying vec3 nNormal;
 varying vec3 vPos;
 varying vec3 pos;
-
 varying mat4 mMatrix;
-varying mat4 mvMatrix;
-varying mat3 nMatrix;
-
-varying vec3 vViewPosition;
 varying vec3 vLightPosition;
 
 uniform float radius;
@@ -220,10 +214,6 @@ void main()
   vec3 lightPos = vLightPosition;
 
   vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
-
-  //vec3 newnormal = normalize(cross(dFdx(vViewPosition), dFdy(vViewPosition)));
-
-  // vNormal = newnormal;
 
   vec3 N = normalize(vNormal);
   //vec3 N = newnormal;
