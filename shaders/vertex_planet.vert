@@ -322,9 +322,9 @@ void main()
 
   // Clamp is used to prevent negative elevation
   // float largeNoise = amplitude*clamp(cnoise(0.08*position), -100.0, 100.0);
-  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
+  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), -valleys, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
-  float valleyNoise = valleys * clamp(snoise(0.04*position, valleyGradient),-planetRadius, 0.0);
+  float valleyNoise = valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
   float vegetationNoise = (vegetation/10.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
 
   // Scale the planet
@@ -339,11 +339,13 @@ void main()
   vec3 mountainNormal = normal - amplitude * perturbation;
   mountainNormal = normalize(mountainNormal);
 
+
+
   //------Valleys------
   // Displace downwards along the sphere normal (Valleys)
   newPosition += normal * vec3(valleyNoise);
   // Recalculate normals for valleys, using the mountain normal
-  valleyGradient *= 0.04;
+  valleyGradient *= 0.02;
   vec3 valleyPerturbation = valleyGradient - dot(valleyGradient, mountainNormal) * mountainNormal;
   vec3 valleyNormal = mountainNormal - valleys * valleyPerturbation;
   valleyNormal = normalize(valleyNormal);
@@ -357,18 +359,24 @@ void main()
   vec3 smallNoisenormal = valleyNormal - smallAmplitude * smallPerturbation;
   smallNoisenormal = normalize(smallNoisenormal);
 
+  // The elevation above the planet's original sphere geometry
+  float elevation = abs(length(newPosition)) - (radius * planetRadius);
+
+  //------Snow------
   // Clamp makes sure no black valleys appear, and also keeps snowBorder below 1.0 to make snow smoother (Less shiny).
-  snowBorder = clamp( abs(length(newPosition)) - (radius * planetRadius) - snowLevel, 0.0, 1.0 );
+  snowBorder = clamp( elevation - snowLevel, 0.0, 1.0 );
+
+  //------Vegetation------
   // Make vegetation noise on the ground which is not covered in snow
   newPosition = newPosition + smoothstep(0.01, 1.0, 1.0 - snowBorder) * smallNoisenormal*vec3(vegetationNoise);
   // Recalculate normals for vegetation
   vegetationGradient *= 0.8;
   vec3 vegetationPerturbation = smoothstep(0.01, 1.0, 1.0 - snowBorder) * (vegetationGradient - dot(vegetationGradient, smallNoisenormal) * smallNoisenormal);
-  vec3 finalfinalNormal = smallNoisenormal - (vegetation/10.0) * vegetationPerturbation;
-  finalfinalNormal = normalize(finalfinalNormal);
+  vec3 finalNormal = smallNoisenormal - (vegetation/10.0) * vegetationPerturbation;
+  finalNormal = normalize(finalNormal);
 
   // Send the final normal to vertex shader
-  vNormal = finalfinalNormal;
+  vNormal = finalNormal;
   pos = newPosition;
   vPos = (modelMatrix * vec4(pos, 1.0 )).xyz;
 
