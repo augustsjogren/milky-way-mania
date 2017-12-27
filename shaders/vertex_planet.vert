@@ -233,11 +233,11 @@ float snoise(vec3 v, out vec3 gradient)
   const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
   const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
 
-// First corner
+  // First corner
   vec3 i  = floor(v + dot(v, C.yyy) );
   vec3 x0 =   v - i + dot(i, C.xxx) ;
 
-// Other corners
+  // Other corners
   vec3 g = step(x0.yzx, x0.xyz);
   vec3 l = 1.0 - g;
   vec3 i1 = min( g.xyz, l.zxy );
@@ -251,15 +251,12 @@ float snoise(vec3 v, out vec3 gradient)
   vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
   vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
 
-// Permutations
+  // Permutations
   i = mod289(i);
-  vec4 p = permute( permute( permute(
-             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
-           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+  vec4 p = permute( permute( permute(i.z + vec4(0.0, i1.z, i2.z, 1.0 )) + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
 
-// Gradients: 7x7 points over a square, mapped onto an octahedron.
-// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+  // Gradients: 7x7 points over a square, mapped onto an octahedron.
+  // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
   float n_ = 0.142857142857; // 1.0/7.0
   vec3  ns = n_ * D.wyz - D.xzx;
 
@@ -289,20 +286,20 @@ float snoise(vec3 v, out vec3 gradient)
   vec3 p2 = vec3(a1.xy,h.z);
   vec3 p3 = vec3(a1.zw,h.w);
 
-//Normalise gradients
+  //Normalise gradients
   vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
   p0 *= norm.x;
   p1 *= norm.y;
   p2 *= norm.z;
   p3 *= norm.w;
 
-// Mix final noise value
+  // Mix final noise value
   vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
   vec4 m2 = m * m;
   vec4 m4 = m2 * m2;
   vec4 pdotx = vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3));
 
-// Determine noise gradient
+  // Determine noise gradient
   vec4 temp = m2 * m * pdotx;
   gradient = -8.0 * (temp.x * x0 + temp.y * x1 + temp.z * x2 + temp.w * x3);
   gradient += m4.x * p0 + m4.y * p1 + m4.z * p2 + m4.w * p3;
@@ -320,6 +317,7 @@ void main()
 
   vec3 largeGradient = vec3(0.0);
   vec3 smallGradient = vec3(0.0);
+  vec3 vegetationGradient = vec3(0.0);
   vec3 valleyGradient = vec3(0.0);
 
   // Clamp is used to prevent negative elevation
@@ -327,7 +325,7 @@ void main()
   float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = valleys * clamp(snoise(0.04*position, valleyGradient),-planetRadius, 0.0);
-  float vegetationNoise = (vegetation/30.0)*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
+  float vegetationNoise = (vegetation/10.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
 
   // Scale the planet
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
@@ -356,19 +354,21 @@ void main()
   // Recalculate normals for small noise
   smallGradient *= 0.8;
   vec3 smallPerturbation = smallGradient - dot(smallGradient, valleyNormal) * valleyNormal;
-  vec3 finalNormal = valleyNormal - smallAmplitude * smallPerturbation;
-  finalNormal = normalize(finalNormal);
+  vec3 smallNoisenormal = valleyNormal - smallAmplitude * smallPerturbation;
+  smallNoisenormal = normalize(smallNoisenormal);
 
-  // Clamp makes sure no black valleys appear, and also keeps snowBorder
-  //  below 1.0 to make vegetation only appear below snow level.
+  // Clamp makes sure no black valleys appear, and also keeps snowBorder below 1.0 to make snow smoother (Less shiny).
   snowBorder = clamp( abs(length(newPosition)) - (radius * planetRadius) - snowLevel, 0.0, 1.0 );
-  //vec4 snowMix = mix(mixCol, snow , snowBorder );
+  // Make vegetation noise on the ground which is not covered in snow
+  newPosition = newPosition + smoothstep(0.01, 1.0, 1.0 - snowBorder) * smallNoisenormal*vec3(vegetationNoise);
+  // Recalculate normals for vegetation
+  vegetationGradient *= 0.8;
+  vec3 vegetationPerturbation = smoothstep(0.01, 1.0, 1.0 - snowBorder) * (vegetationGradient - dot(vegetationGradient, smallNoisenormal) * smallNoisenormal);
+  vec3 finalfinalNormal = smallNoisenormal - (vegetation/10.0) * vegetationPerturbation;
+  finalfinalNormal = normalize(finalfinalNormal);
 
-   newPosition = mix(newPosition + finalNormal*newPosition*vec3(vegetationNoise), newPosition, snowBorder);
-  //newPosition = newPosition + finalNormal*newPosition*vec3(vegetationNoise);
-
-   // Send the final normal to vertex shader
-  vNormal = finalNormal;
+  // Send the final normal to vertex shader
+  vNormal = finalfinalNormal;
   pos = newPosition;
   vPos = (modelMatrix * vec4(pos, 1.0 )).xyz;
 
