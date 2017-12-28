@@ -18,6 +18,7 @@ var FAR = 100000;
 // get the DOM element to attach to
 // - assume we've got jQuery to hand
 var $container = $('#container');
+var $performance = $('#performance');
 
 // Create a WebGL renderer, camera
 // and a scene
@@ -63,6 +64,12 @@ renderer.setSize(WIDTH, HEIGHT);
 // Attach the renderer-supplied
 // DOM element.
 $container.append(renderer.domElement);
+
+// For monitoring performance
+var stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+$performance.append( stats.dom );
+
 
 // Unused for now
 //var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
@@ -217,6 +224,8 @@ function (vertex, fragment) {
 
   function update () {
 
+    stats.begin();
+
     var time = Date.now() * 0.01;
 
     // Radius
@@ -247,6 +256,8 @@ function (vertex, fragment) {
     //orbitControls.update();
 
     render();
+
+    stats.end();
 
     // Schedule the next frame.
     requestAnimationFrame(update);

@@ -241,10 +241,11 @@ void main()
   vec4 snow = vec4(1.0, 1.0, 1.0, 1.0);
 
   // Blend in the vegetation (green) to the base color
-  vec4 newCol = mix(desertColor, col, vegetation) ;
+  vec4 vegCol = mix(desertColor, col, vegetation) ;
 
   float val = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
-  vec4 mixCol = mix(newCol, desertColor , val) ;
+  //Noise to make more vegetation in specific areas
+  vec4 mixCol = mix(vegCol, desertColor , val) ;
   // vec4 mixCol = mix(snowMix, snowMix , val);
 
   // Blend in the snow

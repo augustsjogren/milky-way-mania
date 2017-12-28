@@ -9,6 +9,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   <script src="./js/TrackballControls.js"></script>
   <script src="./js/third-party/Three/examples/js/controls/OrbitControls.js"></script>
+  <script src="./js/third-party/stats.js"></script>
   <script src="./js/functions.js"></script>
   <!-- <script type="text/javascript" src="./planetRendering.js"></script> -->
 </head>
@@ -16,6 +17,9 @@
 <body>
   <div id="container" onmouseout="enableTrackball()">
     <!-- The canvas where the rendering takes place -->
+    <div id="performance">
+
+    </div>
     <div class="GUI">
       <p>Mountains</p>
       <input type="range" id="amp-slider" min="0" max="50" step="0.1" value="1" onmouseover="disableTrackball()" >

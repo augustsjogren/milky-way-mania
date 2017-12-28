@@ -325,7 +325,7 @@ void main()
   float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), -valleys, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
-  float vegetationNoise = (vegetation/10.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
+  float vegetationNoise = (vegetation/5.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
 
   // Scale the planet
   vec3 newRadius = position * vec3(planetRadius, planetRadius, planetRadius );
@@ -372,7 +372,7 @@ void main()
   // Recalculate normals for vegetation
   vegetationGradient *= 0.8;
   vec3 vegetationPerturbation = smoothstep(0.01, 1.0, 1.0 - snowBorder) * (vegetationGradient - dot(vegetationGradient, smallNoisenormal) * smallNoisenormal);
-  vec3 finalNormal = smallNoisenormal - (vegetation/10.0) * vegetationPerturbation;
+  vec3 finalNormal = smallNoisenormal - (vegetation/5.0) * vegetationPerturbation;
   finalNormal = normalize(finalNormal);
 
   // Send the final normal to vertex shader

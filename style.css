@@ -3,6 +3,22 @@
   height: 100%;
 }
 
+/*Place the performance meter to the right*/
+#performance{
+  position: fixed;
+  right: 0%;
+}
+
+#performance > div{
+  position: fixed;
+  right: 0%;
+}
+
+#performance > div > canvas{
+  position: fixed;
+  right: 0%;
+}
+
 .GUI{
   display: flex;
   flex-direction: column;
