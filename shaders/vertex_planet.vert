@@ -9,6 +9,7 @@ uniform float smallAmplitude;
 uniform float planetRadius;
 uniform float radius;
 uniform float snowLevel;
+uniform float waterLevel;
 uniform float vegetation;
 uniform vec3 lightPosition;
 
@@ -322,8 +323,7 @@ void main()
   vec3 valleyGradient = vec3(0.0);
 
   // Clamp is used to prevent negative elevation
-  // float largeNoise = amplitude*clamp(cnoise(0.08*position), -100.0, 100.0);
-  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), -valleys, 100.0);
+  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
   float vegetationNoise = (vegetation/5.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
@@ -339,8 +339,6 @@ void main()
   vec3 perturbation = largeGradient - dot(largeGradient, normal) * normal;
   vec3 mountainNormal = normal - amplitude * perturbation;
   mountainNormal = normalize(mountainNormal);
-
-
 
   //------Valleys------
   // Displace downwards along the sphere normal (Valleys)

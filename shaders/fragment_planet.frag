@@ -14,8 +14,8 @@ varying float elevation;
 uniform float radius;
 uniform float planetRadius;
 uniform float vegetation;
-
 uniform float snowLevel;
+uniform float waterLevel;
 
 struct PointLight {
   vec3 position;
@@ -210,19 +210,15 @@ void main()
   float shininessVal = 2.0; // Shininess
 
   // From vshader
-  vec3 lightPos = vLightPosition;
-
   vec3 N = normalize(vNormal);
-  vec3 L = normalize(lightPos - vPos);
-  //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
+  vec3 L = normalize(vLightPosition - vPos);
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);
-
   float specular = 0.0;
 
   if(lambertian > 0.0) {
-    vec3 R = reflect(-L, N);      // Reflected light vector
+    vec3 R = reflect(-L, N);   // Reflected light vector
     vec3 V = normalize(-vPos); // Vector to viewer
 
     // Compute the specular term
@@ -230,29 +226,34 @@ void main()
     specular = pow(specAngle, shininessVal);
   }
 
-  // Yellow
-  vec4 desertColor = vec4(0.8, 0.8, 0.1, 1.0);
+  // Deserts
+  vec4 desertColor = vec4(0.8, 0.8, 0.5, 1.0);
   // Green
   vec4 col = vec4(0.1, 0.6, 0.1, 1.0);
   // White
   vec4 snow = vec4(1.0, 1.0, 1.0, 1.0);
+  //Beaches
+  vec4 beach = vec4(0.9, 0.9, 0.1, 1.0);
 
   // Blend in the vegetation (green) to the base color
   vec4 vegCol = mix(desertColor, col, vegetation) ;
 
-  // float vegNoise = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
-  //Noise to make more vegetation in specific areas
+  //Mix to make more vegetation in specific areas
   vec4 mixCol = mix(vegCol, desertColor , vegNoise) ;
-  // vec4 mixCol = mix(snowMix, snowMix , vegNoise);
+
+  // Blend in the beaches. The offset determines how long/high the beach will stretch
+  float beachOffset = 0.5;
+  vec4 beachMix = mix(beach, mixCol, clamp(elevation - waterLevel - beachOffset, -1.0, 1.0));
 
   // Blend in the snow
   // This mixing creates snow on the mountains but not on the ground
   // Times 2 for brighter snow
-  vec4 snowMix = mix(mixCol, snow, snowBorder*2.0 );
+  vec4 snowMix = mix(beachMix, snow, snowBorder*2.0 );
 
-  vec4 final = snowMix;
-  vec4 ambientColor = final*0.2;
-  vec4 diffuseColor = final;
+  // Calculate finalColor colors for phong shading
+  vec4 finalColor = snowMix;
+  vec4 ambientColor = finalColor*0.2;
+  vec4 diffuseColor = finalColor;
   vec4 specularColor = vec4(1.0, 1.0, 1.0, 1.0);
 
   vec3 first = vec3(Ka * ambientColor);
@@ -261,6 +262,4 @@ void main()
 
   gl_FragColor = vec4(first + second , 1.0);
   //gl_FragColor = vec4(Ka * ambientColor + Kd * lambertian * diffuseColor + Ks * specular * specularColor, 1.0);
-
-  //gl_FragColor 	= prod * final;
 }

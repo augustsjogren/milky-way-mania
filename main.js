@@ -117,6 +117,11 @@ uniforms.planetRadius = {
   value: 1
 };
 
+uniforms.waterLevel = {
+  type: 'f', // a float
+  value: 1
+};
+
 var wateruniforms = THREE.UniformsUtils.merge( [
 
   THREE.UniformsLib[ "lights" ]
@@ -246,6 +251,7 @@ function (vertex, fragment) {
     // Materials
     uniforms.snowLevel.value = document.getElementById('snow-slider').value;
     uniforms.vegetation.value = document.getElementById('vegetation-slider').value;
+    uniforms.waterLevel.value = document.getElementById('water-slider').value;
 
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
