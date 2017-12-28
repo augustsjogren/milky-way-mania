@@ -2,15 +2,14 @@
 precision highp float;
 #endif
 
-#extension GL_OES_standard_derivatives : enable
-
 // same name and type as VS
 varying vec3 vNormal;
 varying vec3 vPos;
-varying vec3 pos;
 varying mat4 mMatrix;
 varying vec3 vLightPosition;
 varying float snowBorder;
+varying float vegNoise;
+varying float elevation;
 
 uniform float radius;
 uniform float planetRadius;
@@ -213,8 +212,6 @@ void main()
   // From vshader
   vec3 lightPos = vLightPosition;
 
-  vec3 viewDirection = vec3(vec4(normalize(cameraPosition - pos), 1.0) * mMatrix);
-
   vec3 N = normalize(vNormal);
   vec3 L = normalize(lightPos - vPos);
   //vec3 L = normalize(vec3( vec4((lightPos - vPos), 1.0) * mMatrix) );
@@ -243,10 +240,10 @@ void main()
   // Blend in the vegetation (green) to the base color
   vec4 vegCol = mix(desertColor, col, vegetation) ;
 
-  float val = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
+  // float vegNoise = cnoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix));
   //Noise to make more vegetation in specific areas
-  vec4 mixCol = mix(vegCol, desertColor , val) ;
-  // vec4 mixCol = mix(snowMix, snowMix , val);
+  vec4 mixCol = mix(vegCol, desertColor , vegNoise) ;
+  // vec4 mixCol = mix(snowMix, snowMix , vegNoise);
 
   // Blend in the snow
   // This mixing creates snow on the mountains but not on the ground

@@ -15,11 +15,12 @@ uniform vec3 lightPosition;
 attribute float displacement;
 
 varying vec3 vNormal;
-varying vec3 pos;
 varying vec3 vPos;
 varying mat4 mMatrix;
 varying vec3 vLightPosition;
 varying float snowBorder;
+varying float vegNoise;
+varying float elevation;
 
 //
 // GLSL textureless classic 3D noise "cnoise",
@@ -360,13 +361,19 @@ void main()
   smallNoisenormal = normalize(smallNoisenormal);
 
   // The elevation above the planet's original sphere geometry
-  float elevation = abs(length(newPosition)) - (radius * planetRadius);
+  elevation = abs(length(newPosition)) - (radius * planetRadius);
 
   //------Snow------
   // Clamp makes sure no black valleys appear, and also keeps snowBorder below 1.0 to make snow smoother (Less shiny).
   snowBorder = clamp( elevation - snowLevel, 0.0, 1.0 );
 
   //------Vegetation------
+   vec3 newGrad = vec3(0.0);
+  // //Noise to make more vegetation in specific areas
+  // vPos = (modelMatrix * vec4(newPosition, 1.0 )).xyz;
+  vegNoise = snoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix), newGrad);
+  // vegetationNoise *= clamp(100.0*vegNoise, 0.0, 100.0);
+
   // Make vegetation noise on the ground which is not covered in snow
   newPosition = newPosition + smoothstep(0.01, 1.0, 1.0 - snowBorder) * smallNoisenormal*vec3(vegetationNoise);
   // Recalculate normals for vegetation
@@ -377,8 +384,7 @@ void main()
 
   // Send the final normal to vertex shader
   vNormal = finalNormal;
-  pos = newPosition;
-  vPos = (modelMatrix * vec4(pos, 1.0 )).xyz;
+  vPos = (modelMatrix * vec4(newPosition, 1.0 )).xyz;
 
   gl_Position = projectionMatrix * viewMatrix * vec4(vPos, 1.0);
   //gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
