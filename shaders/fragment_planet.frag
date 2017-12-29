@@ -211,7 +211,8 @@ void main()
 
   // From vshader
   vec3 N = normalize(vNormal);
-  vec3 L = normalize(vLightPosition - vPos);
+  vec3 L = normalize(vLightPosition);
+  // vec3 L = normalize(vLightPosition - vPos);
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);

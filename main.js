@@ -192,56 +192,54 @@ function (vertex, fragment) {
     value: new THREE.Vector3(80.0, 80.0, 80.0)
   };
 
+  // Create the geometries for the planets and water
   var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
-  var geometry2 = new THREE.SphereBufferGeometry( 15, 16, 16 );
-  displacement = new Float32Array( geometry.attributes.position.count );
+  var geometry2 = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
 
-  var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
+  var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
+  var waterGeometry2 = new THREE.SphereBufferGeometry( 80, 128, 128 );
 
-  geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
-
+  // Add materials and water spheres
   sphere = new THREE.Mesh( geometry, shaderMaterial );
-  sphere2 = new THREE.Mesh( geometry2, shaderMaterial );
-  sphere3 = new THREE.Mesh( geometry2, shaderMaterial );
   waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
+  sphere.add(waterSphere);
 
+  sphere2 = new THREE.Mesh( geometry2, shaderMaterial );
+  waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial );
+  sphere2.add(waterSphere2);
 
-  console.log(uniforms.lightPosition.value);
+  sphere3 = new THREE.Mesh( geometry2, shaderMaterial );
 
   sphere.position.set(0.0, 0.0, 0.0);
 
+  // Pivots are used to rotate the planets in orbits
   var parent = new THREE.Object3D();
-
   var pivot1 = new THREE.Object3D();
+
   pivot1.rotation.z = 0;
-  parent.add(pivot1);
-  sphere2.position.x = 150;
+  sphere2.position.x = 600;
+  //parent.rotateZ(0.5);
   pivot1.add(sphere2);
   //pivot1.add(sphere3);
+
+  parent.add(pivot1);
 
   // Add  to the scene.
   scene.add(sphere);
   scene.add(parent);
-  //scene.add(sphere2);
-  scene.add(waterSphere);
   scene.add(camera);
-
 
   function update () {
 
+    // Collect performance stats
     stats.begin();
-
     var time = Date.now() * 0.01;
+
+    // Orbital rotation
+    parent.rotation.y += 0.01;
 
     // Radius
     uniforms.planetRadius.value = document.getElementById("radius-slider").value;
-
-    // sphere.rotateY(0.005);
-
-      parent.rotation.z += 0.01;
-    // sphere2.translateX(40);
-
-    // console.log(parent.position.x - sphere2.position.x);
 
     // Refresh noise values from the sliders
     uniforms.amplitude.value = document.getElementById("amp-slider").value;

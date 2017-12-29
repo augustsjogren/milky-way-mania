@@ -214,7 +214,8 @@ void main(){
   vec3 lightPos = vLightPosition;
 
   vec3 N = normalize(vNormal);
-  vec3 L = normalize(lightPos - vPos);
+  vec3 L = normalize(lightPos);
+  // vec3 L = normalize(lightPos - vPos);
 
   float lambertian = max(dot(N, L), 0.0);
 
