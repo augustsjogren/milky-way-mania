@@ -122,6 +122,52 @@ uniforms.waterLevel = {
   value: 1
 };
 
+
+//------------------------------------------------------------------------
+var uniforms2 = THREE.UniformsUtils.merge( [
+
+  THREE.UniformsLib[ "lights" ]
+
+] );
+
+uniforms2.smallAmplitude = {
+  type:'f', // a float
+  value:1
+};
+
+// Add the amplitude uniform
+uniforms2.amplitude = {
+  type: 'f', // a float
+  value: 1
+};
+
+uniforms2.valleys = {
+  type: 'f', // a float
+  value: 1
+};
+
+uniforms2.snowLevel = {
+  type: 'f', // a float
+  value: 1
+};
+
+uniforms2.vegetation = {
+  type: 'f', // a float
+  value: 1
+};
+
+uniforms2.planetRadius = {
+  type: 'f', // a float
+  value: 1
+};
+
+uniforms2.waterLevel = {
+  type: 'f', // a float
+  value: 1
+};
+
+//----------------------------------------------------
+
 var wateruniforms = THREE.UniformsUtils.merge( [
 
   THREE.UniformsLib[ "lights" ]
@@ -154,6 +200,19 @@ var material = new THREE.MeshBasicMaterial( {
   wireframe: true
 } );
 
+//var uniforms2 = uniforms;
+
+uniforms.randomSeed = {
+  type: 'f',
+  value: Math.random() * 1.0 + 0.7
+};
+
+uniforms2.randomSeed = {
+  type: 'f',
+  value: Math.random() * 1.0 + 0.7
+};
+
+
 // Load the shaders from files
 ShaderLoader("shaders/vertex_planet.vert", "shaders/fragment_planet.frag",
 
@@ -162,6 +221,17 @@ function (vertex, fragment) {
   // create the sphere's material
   var shaderMaterial = new THREE.ShaderMaterial({
     uniforms:       uniforms,
+    // vertexShader:   $('#vertexshader').text(),
+    vertexShader:   vertex,
+    // fragmentShader: $('#fragmentshader').text(),
+    fragmentShader: fragment,
+    lights:         true,
+    wireframe:      false
+  });
+
+  // create the sphere's material
+  var shaderMaterial2 = new THREE.ShaderMaterial({
+    uniforms:       uniforms2,
     // vertexShader:   $('#vertexshader').text(),
     vertexShader:   vertex,
     // fragmentShader: $('#fragmentshader').text(),
@@ -204,7 +274,7 @@ function (vertex, fragment) {
   waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
   sphere.add(waterSphere);
 
-  sphere2 = new THREE.Mesh( geometry2, shaderMaterial );
+  sphere2 = new THREE.Mesh( geometry2, shaderMaterial2 );
   waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial );
   sphere2.add(waterSphere2);
 
@@ -250,6 +320,23 @@ function (vertex, fragment) {
     uniforms.snowLevel.value = document.getElementById('snow-slider').value;
     uniforms.vegetation.value = document.getElementById('vegetation-slider').value;
     uniforms.waterLevel.value = document.getElementById('water-slider').value;
+
+
+    //------------------------------------------------------------
+    // Radius
+    uniforms2.planetRadius.value = document.getElementById("radius-slider").value;
+
+    // Refresh noise values from the sliders
+    uniforms2.amplitude.value = document.getElementById("amp-slider").value;
+    uniforms2.valleys.value = document.getElementById("valley-slider").value;
+    uniforms2.smallAmplitude.value = document.getElementById('amp-small-slider').value;
+
+    // Materials
+    uniforms2.snowLevel.value = document.getElementById('snow-slider').value;
+    uniforms2.vegetation.value = document.getElementById('vegetation-slider').value;
+    uniforms2.waterLevel.value = document.getElementById('water-slider').value;
+
+    //--------------------------------------------------------------
 
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;

@@ -11,6 +11,7 @@ uniform float radius;
 uniform float snowLevel;
 uniform float waterLevel;
 uniform float vegetation;
+uniform float randomSeed;
 uniform vec3 lightPosition;
 
 attribute float displacement;
@@ -323,9 +324,9 @@ void main()
   vec3 valleyGradient = vec3(0.0);
 
   // Clamp is used to prevent negative elevation
-  float largeNoise = amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
+  float largeNoise = randomSeed * amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
-  float valleyNoise = valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
+  float valleyNoise = randomSeed * valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
   float vegetationNoise = (vegetation/5.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
 
   // Scale the planet
@@ -363,7 +364,7 @@ void main()
 
   //------Snow------
   // Clamp makes sure no black valleys appear, and also keeps snowBorder below 1.0 to make snow smoother (Less shiny).
-  snowBorder = clamp( elevation - snowLevel, 0.0, 1.0 );
+  snowBorder = randomSeed*clamp( elevation - snowLevel, 0.0, 1.0 );
 
   //------Vegetation------
    vec3 newGrad = vec3(0.0);

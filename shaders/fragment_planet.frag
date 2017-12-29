@@ -16,6 +16,7 @@ uniform float planetRadius;
 uniform float vegetation;
 uniform float snowLevel;
 uniform float waterLevel;
+uniform float randomSeed;
 
 struct PointLight {
   vec3 position;
