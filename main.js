@@ -56,14 +56,30 @@ orbitControls.enableZoom = false;
 var scene = new THREE.Scene();
 
 // the camera starts at 0,0,0 so pull it back
-camera.position.z = 600;
+camera.position.z = 1000;
 
 // Start the renderer.
 renderer.setSize(WIDTH, HEIGHT);
 
-// Attach the renderer-supplied
-// DOM element.
+// Attach the renderer-supplied DOM element.
 $container.append(renderer.domElement);
+
+var isPaused = false;
+
+// Listen for spacebar keypress
+document.addEventListener("keydown", function(event) {
+  //console.log(event.which);
+  if(event.which == 32){
+    // Disable scrolling and pause the animation
+    event.preventDefault();
+    isPaused = !isPaused;
+  }
+  else if (event.which == 37 || event.which == 38 ||
+            event.which == 39 || event.which == 40) {
+    // Disable scrolling for arrow keys
+    event.preventDefault();
+  }
+})
 
 // For monitoring performance
 var stats = new Stats();
@@ -73,7 +89,6 @@ $performance.append( stats.dom );
 
 // Unused for now
 //var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
-
 var pointLight = new THREE.PointLight( 0xffffff, 1.0, 0 );
 pointLight.position.set(100, 0, 100);
 scene.add( pointLight );
@@ -194,14 +209,6 @@ function render() {
   renderer.render(scene, camera);
 }
 
-// material
-var material = new THREE.MeshBasicMaterial( {
-  color: 0xffffff,
-  wireframe: true
-} );
-
-//var uniforms2 = uniforms;
-
 uniforms.randomSeed = {
   type: 'f',
   value: Math.random() * 1.0 + 0.7
@@ -305,8 +312,12 @@ function (vertex, fragment) {
     stats.begin();
     var time = Date.now() * 0.01;
 
-    // Orbital rotation
-    parent.rotation.y += 0.01;
+
+    // Pause the animation
+    if (!isPaused) {
+      // Orbital rotation
+      parent.rotation.y += 0.01;
+    }
 
     // Radius
     uniforms.planetRadius.value = document.getElementById("radius-slider").value;
@@ -322,7 +333,7 @@ function (vertex, fragment) {
     uniforms.waterLevel.value = document.getElementById('water-slider').value;
 
 
-    //------------------------------------------------------------
+    //------------------Uniforms2-----------------------------------
     // Radius
     uniforms2.planetRadius.value = document.getElementById("radius-slider").value;
 
