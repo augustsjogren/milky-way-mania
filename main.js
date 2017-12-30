@@ -220,6 +220,32 @@ uniforms2.randomSeed = {
 };
 
 
+var sununiforms = THREE.UniformsUtils.merge( [
+
+  THREE.UniformsLib[ "lights" ]
+
+] );
+
+sununiforms.waterLevel = {
+  type: 'f', // a float
+  value: 1
+};
+
+sununiforms.planetRadiusWater = {
+  type: 'f', // a float
+  value: 1
+};
+
+sununiforms.lightPosition = {
+  type: 'v3',
+  value: new THREE.Vector3(80.0, 80.0, 80.0)
+};
+
+sununiforms.time = {
+  type: 'f', // a float
+  value: 0.0
+};
+
 // Load the shaders from files
 ShaderLoader("shaders/vertex_planet.vert", "shaders/fragment_planet.frag",
 
@@ -254,6 +280,13 @@ function (vertex, fragment) {
     lights:         true
   });
 
+  var sunShaderMaterial = new THREE.ShaderMaterial({
+    uniforms:       sununiforms,
+    vertexShader:   $('#sunvertexshader').text(),
+    fragmentShader: $('#sunfragmentshader').text(),
+    lights:         true
+  });
+
   // Set up the sphere vars
   var RADIUS = 80;
   var SEGMENTS = 512;
@@ -273,44 +306,51 @@ function (vertex, fragment) {
   var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
   var geometry2 = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
 
+  var sunGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
+
   var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
   var waterGeometry2 = new THREE.SphereBufferGeometry( 80, 128, 128 );
 
   // Add materials and water spheres
-  sphere = new THREE.Mesh( geometry, shaderMaterial );
+  planet1 = new THREE.Mesh( geometry, shaderMaterial );
   waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
-  sphere.add(waterSphere);
+  planet1.add(waterSphere);
 
   sphere2 = new THREE.Mesh( geometry2, shaderMaterial2 );
   waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial );
   sphere2.add(waterSphere2);
 
-  sphere3 = new THREE.Mesh( geometry2, shaderMaterial );
+  sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
 
-  sphere.position.set(0.0, 0.0, 0.0);
+  planet1.position.set(0.0, 0.0, 0.0);
 
   // Pivots are used to rotate the planets in orbits
   var parent = new THREE.Object3D();
   var pivot1 = new THREE.Object3D();
 
   pivot1.rotation.z = 0;
+  planet1.position.z = 600;
   sphere2.position.x = 600;
   //parent.rotateZ(0.5);
+  pivot1.add(planet1);
   pivot1.add(sphere2);
-  //pivot1.add(sphere3);
 
   parent.add(pivot1);
 
   // Add  to the scene.
-  scene.add(sphere);
+  scene.add(sunSphere);
   scene.add(parent);
   scene.add(camera);
+
+  var clock = new THREE.Clock();
 
   function update () {
 
     // Collect performance stats
     stats.begin();
-    var time = Date.now() * 0.01;
+    //var time = Date.now()/10000000;
+
+    var time = clock.getElapsedTime();
 
 
     // Pause the animation
@@ -352,6 +392,11 @@ function (vertex, fragment) {
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
+
+    // Sun
+    sununiforms.time.value = time;
+
+    //console.log(sununiforms.time.value);
 
     // Navigation
     controls.update();
