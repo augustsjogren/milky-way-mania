@@ -183,6 +183,11 @@ uniforms2.waterLevel = {
 
 //----------------------------------------------------
 
+// The offset for sending to shaders
+var planet1Trans = new THREE.Vector3(600.0, 0.0, 0.0);
+var planet2Trans = new THREE.Vector3(900.0, 0.0, 0.0);
+
+
 var wateruniforms = THREE.UniformsUtils.merge( [
 
   THREE.UniformsLib[ "lights" ]
@@ -204,13 +209,15 @@ wateruniforms.lightPosition = {
   value: new THREE.Vector3(0.0, 0.0, 0.0)
 };
 
+wateruniforms.planetTrans = {
+  type: 'v3',
+  value: planet2Trans
+};
+
 function render() {
   // Draw!
   renderer.render(scene, camera);
 }
-
-var planet1Trans = new THREE.Vector3(0.0, 0.0, 600);
-var planet2Trans = new THREE.Vector3(600.0, 0.0, 0.0);
 
 uniforms.randomSeed = {
   type: 'f',
@@ -319,7 +326,7 @@ function (vertex, fragment) {
   var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
   var geometry2 = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
 
-  var sunGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
+  var sunGeometry = new THREE.SphereBufferGeometry( 110, 128, 128 );
 
   var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
   var waterGeometry2 = new THREE.SphereBufferGeometry( 80, 128, 128 );
@@ -339,20 +346,24 @@ function (vertex, fragment) {
 
   // Pivots are used to rotate the planets in orbits
   var parent = new THREE.Object3D();
+  var parent2 = new THREE.Object3D();
   var pivot1 = new THREE.Object3D();
+  var pivot2 = new THREE.Object3D();
 
-  pivot1.rotation.z = 0;
-  planet1.position.z = planet1Trans.z;
+  // Initial planet offset
+  planet1.position.x = planet1Trans.x;
   sphere2.position.x = planet2Trans.x;
-  //parent.rotateZ(0.5);
+
   pivot1.add(planet1);
-  pivot1.add(sphere2);
+  pivot2.add(sphere2);
 
   parent.add(pivot1);
+  parent2.add(pivot2);
 
   // Add  to the scene.
   scene.add(sunSphere);
   scene.add(parent);
+  scene.add(parent2);
   scene.add(camera);
 
   var clock = new THREE.Clock();
@@ -365,11 +376,12 @@ function (vertex, fragment) {
 
     var time = clock.getElapsedTime();
 
-
     // Pause the animation
     if (!isPaused) {
       // Orbital rotation
-      parent.rotation.y += 0.01;
+      parent.rotation.y += 0.005;
+      parent2.rotation.y += 0.01;
+
       //planet1.rotation.y -= 0.05;
     }
 

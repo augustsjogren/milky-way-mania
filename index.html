@@ -203,6 +203,8 @@ varying vec3 vPos;
 varying vec3 vNormal;
 varying vec3 vLightPosition;
 
+uniform vec3 planetTrans;
+
 void main(){
 
   float Ka = 0.8;   // Ambient reflection coefficient
@@ -214,7 +216,7 @@ void main(){
   vec3 lightPos = vLightPosition;
 
   vec3 N = normalize(vNormal);
-  vec3 L = normalize(lightPos);
+  vec3 L = normalize(lightPos - planetTrans);
   // vec3 L = normalize(lightPos - vPos);
 
   float lambertian = max(dot(N, L), 0.0);
@@ -386,7 +388,7 @@ void main(){
 
   vec3 gradient = vec3(0.0);
 
-  sunNoise = 2.0 * clamp(snoise(0.05*position + ((time/2.0)), gradient), 0.0, 15.0);
+  sunNoise = 2.0 * clamp(snoise(0.03*position + ((time/2.0)), gradient), 0.0, 15.0);
 
   float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
 
@@ -449,7 +451,7 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-  vec4 sunColor = mix( vec4(1.0, 0.5, 0.0, 1.0), vec4(1.0, 0.2, 0.0, 1.0), sunNoise );
+  vec4 sunColor = mix( vec4(1.0, 0.5, 0.0, 1.0), vec4(0.8, 0.3, 0.0, 0.4), sunNoise );
    //vec4 sunColor = vec4(1.0, 0.5, 0.0, 1.0);
 
   // vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
