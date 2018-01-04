@@ -386,21 +386,26 @@ void main(){
 
   vec3 gradient = vec3(0.0);
 
-  sunNoise = 2.0 * clamp(snoise(0.05*position * (sin(time/2.0)), gradient), 0.0, 15.0);
-  //
-  // gradient *= 0.5;
-  // vec3 perturbation = gradient - dot(gradient, normal) * normal;
-  // vec3 waterNormal = normal - 0.05 * perturbation;
-  // waterNormal = normalize(waterNormal);
-  // //
-  // vNormal = waterNormal;
+  sunNoise = 2.0 * clamp(snoise(0.05*position + ((time/2.0)), gradient), 0.0, 15.0);
+
+  float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
+
+  vec3 newPosition = position + normal*vec3(surfaceNoise);
+
+
+  gradient *= 0.05 ;
+  vec3 perturbation = gradient - dot(gradient, normal) * normal;
+  vec3 sunNormal = normal - 2.0 * perturbation;
+  sunNormal = normalize(sunNormal);
+
+  vNormal = sunNormal;
 
 
   // First scale the sphere along with the planet, and then adjust the sea level
   // vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
   // vec3 newPosition = newRadius + normal * vec3(waterLevel);
 
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 
 </script>
@@ -419,8 +424,8 @@ varying float sunNoise;
 
 void main(){
 
-  float Ka = 0.8;   // Ambient reflection coefficient
-  float Kd = 0.6;   // Diffuse reflection coefficient
+  float Ka = 1.0;   // Ambient reflection coefficient
+  float Kd = 1.0;   // Diffuse reflection coefficient
   float Ks = 0.6;   // Specular reflection coefficient
   float shininessVal = 2.0; // Shininess
 

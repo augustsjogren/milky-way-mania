@@ -201,7 +201,7 @@ wateruniforms.planetRadiusWater = {
 
 wateruniforms.lightPosition = {
   type: 'v3',
-  value: new THREE.Vector3(80.0, 80.0, 80.0)
+  value: new THREE.Vector3(0.0, 0.0, 0.0)
 };
 
 function render() {
@@ -209,14 +209,27 @@ function render() {
   renderer.render(scene, camera);
 }
 
+var planet1Trans = new THREE.Vector3(0.0, 0.0, 600);
+var planet2Trans = new THREE.Vector3(600.0, 0.0, 0.0);
+
 uniforms.randomSeed = {
   type: 'f',
   value: Math.random() * 1.0 + 0.7
 };
 
+uniforms.planetTrans = {
+  type: 'v3',
+  value: planet1Trans
+};
+
 uniforms2.randomSeed = {
   type: 'f',
   value: Math.random() * 1.0 + 0.7
+};
+
+uniforms2.planetTrans = {
+  type: 'v3',
+  value: planet2Trans
 };
 
 
@@ -238,7 +251,7 @@ sununiforms.planetRadiusWater = {
 
 sununiforms.lightPosition = {
   type: 'v3',
-  value: new THREE.Vector3(80.0, 80.0, 80.0)
+  value: new THREE.Vector3(0.0, 0.0, 0.0)
 };
 
 sununiforms.time = {
@@ -299,7 +312,7 @@ function (vertex, fragment) {
 
   uniforms.lightPosition = {
     type: 'v3',
-    value: new THREE.Vector3(80.0, 80.0, 80.0)
+    value: new THREE.Vector3(10.0, 0.0, 0.0)
   };
 
   // Create the geometries for the planets and water
@@ -329,8 +342,8 @@ function (vertex, fragment) {
   var pivot1 = new THREE.Object3D();
 
   pivot1.rotation.z = 0;
-  planet1.position.z = 600;
-  sphere2.position.x = 600;
+  planet1.position.z = planet1Trans.z;
+  sphere2.position.x = planet2Trans.x;
   //parent.rotateZ(0.5);
   pivot1.add(planet1);
   pivot1.add(sphere2);
@@ -357,6 +370,7 @@ function (vertex, fragment) {
     if (!isPaused) {
       // Orbital rotation
       parent.rotation.y += 0.01;
+      //planet1.rotation.y -= 0.05;
     }
 
     // Radius
