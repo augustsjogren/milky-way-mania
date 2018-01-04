@@ -86,7 +86,6 @@ var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 $performance.append( stats.dom );
 
-
 // Unused for now
 //var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
 var pointLight = new THREE.PointLight( 0xffffff, 1.0, 0 );
@@ -94,140 +93,29 @@ pointLight.position.set(100, 0, 100);
 scene.add( pointLight );
 //scene.add( light );
 
-// Light stuff
-var uniforms = THREE.UniformsUtils.merge( [
-
-  THREE.UniformsLib[ "lights" ]
-
-] );
-
-uniforms.smallAmplitude = {
-  type:'f', // a float
-  value:1
-};
-
-// Add the amplitude uniform
-uniforms.amplitude = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms.valleys = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms.snowLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms.vegetation = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms.planetRadius = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms.waterLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-
-//------------------------------------------------------------------------
-var uniforms2 = THREE.UniformsUtils.merge( [
-
-  THREE.UniformsLib[ "lights" ]
-
-] );
-
-uniforms2.smallAmplitude = {
-  type:'f', // a float
-  value:1
-};
-
-// Add the amplitude uniform
-uniforms2.amplitude = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms2.valleys = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms2.snowLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms2.vegetation = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms2.planetRadius = {
-  type: 'f', // a float
-  value: 1
-};
-
-uniforms2.waterLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-//----------------------------------------------------
+var uniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+uniforms2.smallAmplitude = {  type:'f', value:1 };
+uniforms2.amplitude = { type: 'f', value: 1 };
+uniforms2.valleys = { type: 'f', value: 1 };
+uniforms2.snowLevel = { type: 'f', value: 1 };
+uniforms2.vegetation = { type: 'f', value: 1 };
+uniforms2.planetRadius = { type: 'f', value: 1 };
+uniforms2.waterLevel = { type: 'f', value: 1 };
 
 // The offset for sending to shaders
 var planet1Trans = new THREE.Vector3(600.0, 0.0, 0.0);
 var planet2Trans = new THREE.Vector3(900.0, 0.0, 0.0);
 
-
-var wateruniforms = THREE.UniformsUtils.merge( [
-
-  THREE.UniformsLib[ "lights" ]
-
-] );
-
-wateruniforms.waterLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-wateruniforms.planetRadiusWater = {
-  type: 'f', // a float
-  value: 1
-};
-
-wateruniforms.lightPosition = {
-  type: 'v3',
-  value: new THREE.Vector3(0.0, 0.0, 0.0)
-};
-
-wateruniforms.planetTrans = {
-  type: 'v3',
-  value: planet2Trans
-};
+var wateruniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+wateruniforms.waterLevel = { type: 'f', value: 1 };
+wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
+wateruniforms.lightPosition = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
+wateruniforms.planetTrans = { type: 'v3', value: planet2Trans };
 
 function render() {
   // Draw!
   renderer.render(scene, camera);
 }
-
-uniforms.randomSeed = {
-  type: 'f',
-  value: Math.random() * 1.0 + 0.7
-};
-
-uniforms.planetTrans = {
-  type: 'v3',
-  value: planet1Trans
-};
 
 uniforms2.randomSeed = {
   type: 'f',
@@ -240,31 +128,29 @@ uniforms2.planetTrans = {
 };
 
 
-var sununiforms = THREE.UniformsUtils.merge( [
+var sununiforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+sununiforms.waterLevel = { type: 'f', value: 1 };
+sununiforms.planetRadiusWater = { type: 'f', value: 1 };
+sununiforms.lightPosition = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
+sununiforms.time = { type: 'f', value: 0.0 };
 
-  THREE.UniformsLib[ "lights" ]
+// Set up the sphere vars
+var RADIUS = 80;
+var SEGMENTS = 512;
+var RINGS = 512;
 
-] );
-
-sununiforms.waterLevel = {
-  type: 'f', // a float
-  value: 1
-};
-
-sununiforms.planetRadiusWater = {
-  type: 'f', // a float
-  value: 1
-};
-
-sununiforms.lightPosition = {
-  type: 'v3',
-  value: new THREE.Vector3(0.0, 0.0, 0.0)
-};
-
-sununiforms.time = {
-  type: 'f', // a float
-  value: 0.0
-};
+var uniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+uniforms.smallAmplitude = { type: 'f', value: 1 };
+uniforms.amplitude=       { type: 'f', value: 1 };
+uniforms.valleys = { type: 'f', value: 1 };
+uniforms.snowLevel = { type: 'f', value: 1 };
+uniforms.vegetation = { type: 'f', value: 1 };
+uniforms.planetRadius = { type: 'f', value: 1 };
+uniforms.waterLevel = { type: 'f', value: 1 };
+uniforms.randomSeed = { type: 'f', value: Math.random() * 1.0 + 0.7 };
+uniforms.planetTrans = { type: 'v3',value: planet1Trans };
+uniforms.radius = { type: 'f', value: RADIUS };
+uniforms.lightPosition = { type: 'v3',value: new THREE.Vector3(10.0, 0.0, 0.0) };
 
 // Load the shaders from files
 ShaderLoader("shaders/vertex_planet.vert", "shaders/fragment_planet.frag",
@@ -307,20 +193,17 @@ function (vertex, fragment) {
     lights:         true
   });
 
-  // Set up the sphere vars
-  var RADIUS = 80;
-  var SEGMENTS = 512;
-  var RINGS = 512;
 
-  uniforms.radius = {
-    type: 'f',
-    value: RADIUS
-  };
 
-  uniforms.lightPosition = {
-    type: 'v3',
-    value: new THREE.Vector3(10.0, 0.0, 0.0)
-  };
+  // uniforms.radius = {
+  //   type: 'f',
+  //   value: RADIUS
+  // };
+
+  // uniforms.lightPosition = {
+  //   type: 'v3',
+  //   value: new THREE.Vector3(10.0, 0.0, 0.0)
+  // };
 
   // Create the geometries for the planets and water
   var geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
