@@ -216,7 +216,7 @@ void main()
   //vec3 L = normalize(vLightPosition);
   //vec3 L = normalize(vLightPosition - vPos);
 
-  vec3 L = normalize(vLightPosition - planetTrans);
+  vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal
   float lambertian = max(dot(N, L), 0.0);

@@ -210,6 +210,8 @@ function (vertex, fragment) {
   planet1.position.x = planet1Trans.x;
   planet2.position.x = planet2Trans.x;
 
+
+
   // Attatch the planets to their pivots and parents
   pivot1.add(planet1);
   pivot2.add(planet2);
@@ -221,6 +223,9 @@ function (vertex, fragment) {
   scene.add(parent);
   scene.add(parent2);
   scene.add(camera);
+
+  var worldPosition = new THREE.Vector3();
+  var worldPosition2 = new THREE.Vector3();
 
   var clock = new THREE.Clock();
 
@@ -237,8 +242,15 @@ function (vertex, fragment) {
       parent.rotation.y += 0.005;
       parent2.rotation.y += 0.01;
 
-      //planet1.rotation.y -= 0.05;
+      planet1.rotation.y -= 0.05;
     }
+
+    // scene.updateMatrixWorld();
+    worldPosition.setFromMatrixPosition( planet1.matrixWorld );
+    worldPosition2.setFromMatrixPosition( planet2.matrixWorld );
+    uniforms.planetTrans.value = worldPosition;
+    uniforms2.planetTrans.value = worldPosition2;
+
 
     //------------------Update uniforms----------------------
     // Radius
