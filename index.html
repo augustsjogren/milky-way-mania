@@ -35,6 +35,8 @@
       <input type="range" id="snow-slider" class="slider" min="-50" max="100" step="0.05" value="5" onmouseover="disableTrackball()" >
       <p>Vegetation level</p>
       <input type="range" id="vegetation-slider" class="slider" min="0" max="1.0" step="0.01" value="0" onmouseover="disableTrackball()" >
+      <p>Cloud density</p>
+      <input type="range" id="cloud-slider" class="slider" min="0" max="1.0" step="0.01" value="0.5" onmouseover="disableTrackball()" >
     </div>
   </div>
 </body>
@@ -492,6 +494,7 @@ uniform float waterLevel;
 uniform float planetRadiusWater;
 uniform vec3 lightPosition;
 uniform float time;
+uniform float cloudDensity;
 
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex
@@ -615,7 +618,7 @@ void main(){
   vec3 gradient = vec3(0.0);
 
   // cloudNoise = 2.0 * clamp(snoise(0.03*position + ((time/2.0)), gradient), 0.0, 15.0);
-  cloudNoise = 2.0 * clamp(snoise(0.03*position, gradient), 0.0, 15.0);
+  cloudNoise = 2.0 * clamp(snoise(0.03*position , gradient), 0.0, 20.0) * cloudDensity;
 
   float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
 
@@ -634,9 +637,6 @@ void main(){
   sunNormal = normalize(sunNormal);
 
   vNormal = sunNormal;
-
-
-
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }

@@ -149,9 +149,8 @@ cloudUniforms.waterLevel        = { type: 'f', value: 1 };
 cloudUniforms.planetRadiusWater = { type: 'f',  value: 1 };
 cloudUniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 cloudUniforms.planetTrans       = { type: 'v3', value: planet2Trans };
-cloudUniforms.transparent = true;
-cloudUniforms.opacity = 0.3;
-cloudUniforms.needsUpdate = true;
+cloudUniforms.cloudDensity      = { type: 'v3', value: 0.5 };
+
 
 // Sun uniforms
 var sununiforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -284,6 +283,7 @@ function (vertex, fragment) {
       parent2.rotation.y += 0.01;
 
       planet1.rotation.y -= 0.02;
+      planet2.rotation.z +=0.005
     }
 
     // scene.updateMatrixWorld();
@@ -335,6 +335,8 @@ function (vertex, fragment) {
     cloudUniforms.waterLevel.value = document.getElementById('water-slider').value;
     cloudUniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     cloudUniforms.planetTrans.value = worldPosition2;
+    cloudUniforms.cloudDensity.value = document.getElementById("cloud-slider").value;
+
     // Sun
     sununiforms.time.value = time;
 
