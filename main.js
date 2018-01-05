@@ -101,7 +101,7 @@ var worldPosition2 = new THREE.Vector3();
 // Set up the sphere vars
 var RADIUS = 80;
 var SEGMENTS = 512;
-var RINGS = 512;
+var RINGS = 256;
 
 // Planet 1 uniforms
 var uniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -201,7 +201,7 @@ function (vertex, fragment) {
   // Create the geometries for the planets
   var planet1Geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
   var planet2Geometry = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
-  var sunGeometry = new THREE.SphereBufferGeometry( 110, 128, 128 );
+  var sunGeometry = new THREE.SphereBufferGeometry( 110, 64, 64 );
   // Two spheres used for water
   var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
   var waterGeometry2 = new THREE.SphereBufferGeometry( 80, 128, 128 );
@@ -300,7 +300,7 @@ function (vertex, fragment) {
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms.planetTrans.value = worldPosition;
-    
+
     wateruniforms2.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms2.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms2.planetTrans.value = worldPosition2;
