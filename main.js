@@ -64,6 +64,8 @@ $container.append(renderer.domElement);
 
 var isPaused = false;
 
+var cloudBox = document.getElementById("cloudCheckbox");
+
 // Listen for spacebar keypress
 document.addEventListener("keydown", function(event) {
   //console.log(event.which);
@@ -284,6 +286,10 @@ function (vertex, fragment) {
 
       planet1.rotation.y -= 0.02;
       planet2.rotation.z +=0.005
+    }
+
+    if(cloudBox.checked){
+      cloudSphere.rotation.z -= 0.005;
     }
 
     // scene.updateMatrixWorld();
