@@ -49,10 +49,12 @@ precision highp float;
 varying vec3 vPos;
 varying vec3 vNormal;
 varying vec3 vLightPosition;
+varying mat4 mMatrix;
 
 uniform float waterLevel;
 uniform float planetRadiusWater;
 uniform vec3 lightPosition;
+uniform vec3 planetTrans;
 
 //
 // Description : Array and textureless GLSL 2D/3D/4D simplex
@@ -172,6 +174,7 @@ void main(){
 
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
+  mMatrix = modelMatrix;
 
   vec3 gradient = vec3(0.0);
 
@@ -202,8 +205,10 @@ precision highp float;
 varying vec3 vPos;
 varying vec3 vNormal;
 varying vec3 vLightPosition;
+varying mat4 mMatrix;
 
 uniform vec3 planetTrans;
+
 
 void main(){
 
@@ -216,7 +221,8 @@ void main(){
   vec3 lightPos = vLightPosition;
 
   vec3 N = normalize(vNormal);
-  vec3 L = normalize(lightPos - planetTrans);
+  //vec3 L = normalize(lightPos - planetTrans);
+  vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
   // vec3 L = normalize(lightPos - vPos);
 
   float lambertian = max(dot(N, L), 0.0);

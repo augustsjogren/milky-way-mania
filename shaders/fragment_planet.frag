@@ -241,10 +241,10 @@ void main()
   vec4 beach = vec4(0.9, 0.9, 0.1, 1.0);
 
   // Blend in the vegetation (green) to the base color
-  vec4 vegCol = mix(desertColor, col, vegetation) ;
+  vec4 vegCol = mix(desertColor, col, vegetation);
 
   //Mix to make more vegetation in specific areas
-  vec4 mixCol = mix(vegCol, desertColor , vegNoise) ;
+  vec4 mixCol = mix(vegCol, desertColor , vegNoise);
 
   // Blend in the beaches. The offset determines how long/high the beach will stretch
   float beachOffset = 0.5;

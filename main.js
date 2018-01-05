@@ -95,6 +95,9 @@ scene.add( pointLight );
 var planet1Trans = new THREE.Vector3(600.0, 0.0, 0.0);
 var planet2Trans = new THREE.Vector3(900.0, 0.0, 0.0);
 
+var worldPosition = new THREE.Vector3();
+var worldPosition2 = new THREE.Vector3();
+
 // Set up the sphere vars
 var RADIUS = 80;
 var SEGMENTS = 512;
@@ -132,6 +135,13 @@ wateruniforms.waterLevel        = { type: 'f', value: 1 };
 wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms.planetTrans       = { type: 'v3', value: planet2Trans };
+
+// Water uniforms
+var wateruniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+wateruniforms2.waterLevel        = { type: 'f', value: 1 };
+wateruniforms2.planetRadiusWater = { type: 'f',  value: 1 };
+wateruniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
+wateruniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
 
 // Sun uniforms
 var sununiforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -174,6 +184,13 @@ function (vertex, fragment) {
     lights:         true
   });
 
+  var waterShaderMaterial2 = new THREE.ShaderMaterial({
+    uniforms:       wateruniforms2,
+    vertexShader:   $('#watervertexshader').text(),
+    fragmentShader: $('#waterfragmentshader').text(),
+    lights:         true
+  });
+
   var sunShaderMaterial = new THREE.ShaderMaterial({
     uniforms:       sununiforms,
     vertexShader:   $('#sunvertexshader').text(),
@@ -195,7 +212,7 @@ function (vertex, fragment) {
   planet1.add(waterSphere);
 
   planet2 = new THREE.Mesh( planet2Geometry, shaderMaterial2 );
-  waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial );
+  waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial2 );
   planet2.add(waterSphere2);
 
   sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
@@ -210,8 +227,6 @@ function (vertex, fragment) {
   planet1.position.x = planet1Trans.x;
   planet2.position.x = planet2Trans.x;
 
-
-
   // Attatch the planets to their pivots and parents
   pivot1.add(planet1);
   pivot2.add(planet2);
@@ -224,10 +239,10 @@ function (vertex, fragment) {
   scene.add(parent2);
   scene.add(camera);
 
-  var worldPosition = new THREE.Vector3();
-  var worldPosition2 = new THREE.Vector3();
-
   var clock = new THREE.Clock();
+
+  parent.rotation.x += 0.3;
+  parent2.rotation.x += 0.5;
 
   function update () {
 
@@ -242,7 +257,7 @@ function (vertex, fragment) {
       parent.rotation.y += 0.005;
       parent2.rotation.y += 0.01;
 
-      planet1.rotation.y -= 0.05;
+      planet1.rotation.y -= 0.02;
     }
 
     // scene.updateMatrixWorld();
@@ -284,6 +299,11 @@ function (vertex, fragment) {
     // Water
     wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
+    wateruniforms.planetTrans.value = worldPosition;
+    
+    wateruniforms2.waterLevel.value = document.getElementById('water-slider').value;
+    wateruniforms2.planetRadiusWater.value = document.getElementById("radius-slider").value;
+    wateruniforms2.planetTrans.value = worldPosition2;
     // Sun
     sununiforms.time.value = time;
 

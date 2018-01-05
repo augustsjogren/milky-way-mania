@@ -385,12 +385,10 @@ void main()
 
   //------Vegetation------
    vec3 newGrad = vec3(0.0);
-  // //Noise to make more vegetation in specific areas
-  // vPos = (modelMatrix * vec4(newPosition, 1.0 )).xyz;
-  vegNoise = snoise(0.04  * vec3( vec4(vPos, 1.0) * mMatrix), newGrad);
-  // vegetationNoise *= clamp(100.0*vegNoise, 0.0, 100.0);
+  // //Noise to make more vegetation in specific areas, used in fragment shader
+  vegNoise = snoise(0.04  * position, newGrad);
 
-  // Make vegetation noise on the ground which is not covered in snow
+  // Make vegetation noise (roughness) on the ground which is not covered in snow
   newPosition = newPosition + smoothstep(0.01, 1.0, 1.0 - snowBorder) * smallNoisenormal*vec3(vegetationNoise);
   // Recalculate normals for vegetation
   vegetationGradient *= 0.8;
@@ -398,7 +396,7 @@ void main()
   vec3 finalNormal = smallNoisenormal - (vegetation/5.0) * vegetationPerturbation;
   finalNormal = normalize(finalNormal);
 
-  // Send the final normal to vertex shader
+  // Send the final normal and position to vertex shader
   vNormal = finalNormal;
   vPos = (modelMatrix * vec4(newPosition, 1.0 )).xyz;
 
