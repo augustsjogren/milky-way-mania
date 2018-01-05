@@ -22,19 +22,19 @@
     </div>
     <div class="GUI">
       <p>Mountains</p>
-      <input type="range" id="amp-slider" min="0" max="20" step="0.1" value="1" onmouseover="disableTrackball()" >
+      <input type="range" id="amp-slider" class="slider" min="0" max="20" step="0.1" value="1" onmouseover="disableTrackball()" >
       <p>Valleys</p>
-      <input type="range" id="valley-slider" min="0" max="50" step="0.1" value="0" onmouseover="disableTrackball()" >
+      <input type="range" id="valley-slider" class="slider" min="0" max="50" step="0.1" value="0" onmouseover="disableTrackball()" >
       <p>Surface roughness</p>
-      <input type="range" id="amp-small-slider" min="0.015" max="1" step="0.01" value="1" onmouseover="disableTrackball()" >
+      <input type="range" id="amp-small-slider" class="slider" min="0.015" max="1" step="0.01" value="1" onmouseover="disableTrackball()" >
       <p>Radius</p>
-      <input type="range" id="radius-slider" min="0.5" max="5" step="0.1" value="1" onmouseover="disableTrackball()" >
+      <input type="range" id="radius-slider" class="slider" min="0.5" max="5" step="0.1" value="1" onmouseover="disableTrackball()" >
       <p>Water level</p>
-      <input type="range" id="water-slider" min="-50" max="100" step="0.01" value="-10" onmouseover="disableTrackball()" >
+      <input type="range" id="water-slider" class="slider" min="-50" max="100" step="0.001" value="-10" onmouseover="disableTrackball()" >
       <p>Snow level</p>
-      <input type="range" id="snow-slider" min="-50" max="100" step="0.05" value="5" onmouseover="disableTrackball()" >
+      <input type="range" id="snow-slider" class="slider" min="-50" max="100" step="0.05" value="5" onmouseover="disableTrackball()" >
       <p>Vegetation level</p>
-      <input type="range" id="vegetation-slider" min="0" max="1.0" step="0.01" value="0" onmouseover="disableTrackball()" >
+      <input type="range" id="vegetation-slider" class="slider" min="0" max="1.0" step="0.01" value="0" onmouseover="disableTrackball()" >
     </div>
   </div>
 </body>
@@ -177,16 +177,14 @@ void main(){
   mMatrix = modelMatrix;
 
   vec3 gradient = vec3(0.0);
-
   float waterNoise = 0.05 * clamp(snoise(0.5*position, gradient), -100.0, 100.0);
 
   gradient *= 0.5;
   vec3 perturbation = gradient - dot(gradient, normal) * normal;
   vec3 waterNormal = normal - 0.05 * perturbation;
   waterNormal = normalize(waterNormal);
-  //
-   vNormal = waterNormal;
 
+  vNormal = waterNormal;
 
   // First scale the sphere along with the planet, and then adjust the sea level
   vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
@@ -221,9 +219,9 @@ void main(){
   vec3 lightPos = vLightPosition;
 
   vec3 N = normalize(vNormal);
-  //vec3 L = normalize(lightPos - planetTrans);
+  // The light vector from the lighposition (the sun) to the planet.
+  // planetTrans is the world position for the planet
   vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
-  // vec3 L = normalize(lightPos - vPos);
 
   float lambertian = max(dot(N, L), 0.0);
 
@@ -238,7 +236,7 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-  vec4 waterColor = vec4(0.2, 0.2, 0.8, 1.0);
+  vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
   vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
   //TODO: Brighter water in shallower parts

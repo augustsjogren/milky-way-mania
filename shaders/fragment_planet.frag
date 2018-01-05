@@ -19,13 +19,6 @@ uniform float waterLevel;
 uniform float randomSeed;
 uniform vec3 planetTrans;
 
-struct PointLight {
-  vec3 position;
-  vec3 color;
-};
-
-uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
-
 //
 // GLSL textureless classic 3D noise "cnoise",
 // with an RSL-style periodic variant "pnoise".
@@ -213,9 +206,9 @@ void main()
 
   // From vshader
   vec3 N = normalize(vNormal);
-  //vec3 L = normalize(vLightPosition);
-  //vec3 L = normalize(vLightPosition - vPos);
 
+  // The light vector from the lighposition (the sun) to the planet.
+  // planetTrans is the world position for the planet
   vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
 
   // Lambert's cosine law, calculate the dot product of the light to the vertex normal

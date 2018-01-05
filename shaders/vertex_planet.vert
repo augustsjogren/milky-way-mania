@@ -330,10 +330,7 @@ void main()
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
   vLightPosition = vec3( vec4( lightPosition , 1.0) * modelViewMatrix );
-
   mMatrix = modelMatrix;
-
-  mat4 myRotation = rotationMatrix(vec3(0.0, 1.0, 0.0), 0.2);
 
   vec3 largeGradient = vec3(0.0);
   vec3 smallGradient = vec3(0.0);
@@ -384,9 +381,8 @@ void main()
   snowBorder = randomSeed*clamp( elevation - snowLevel, 0.0, 1.0 );
 
   //------Vegetation------
-   vec3 newGrad = vec3(0.0);
   // //Noise to make more vegetation in specific areas, used in fragment shader
-  vegNoise = snoise(0.04  * position, newGrad);
+  vegNoise = snoise(0.04  * position, vec3(0.0));
 
   // Make vegetation noise (roughness) on the ground which is not covered in snow
   newPosition = newPosition + smoothstep(0.01, 1.0, 1.0 - snowBorder) * smallNoisenormal*vec3(vegetationNoise);
