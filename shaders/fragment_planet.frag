@@ -240,8 +240,8 @@ void main()
   vec4 mixCol = mix(vegCol, desertColor , vegNoise);
 
   // Blend in the beaches. The offset determines how long/high the beach will stretch
-  float beachOffset = 0.5;
-  vec4 beachMix = mix(beach, mixCol, clamp(elevation - waterLevel - beachOffset, -1.0, 1.0));
+  float beachOffset = -1.0;
+  vec4 beachMix = mix(beach, mixCol, clamp(elevation  - beachOffset, -1.0, 1.0));
 
   // Blend in the snow
   // This mixing creates snow on the mountains but not on the ground

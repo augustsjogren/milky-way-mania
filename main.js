@@ -105,6 +105,8 @@ var RADIUS = 80;
 var SEGMENTS = 512;
 var RINGS = 256;
 
+var WATERLEVEL = RADIUS - 1;
+
 // Planet 1 uniforms
 var uniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
 uniforms.smallAmplitude = { type: 'f', value: 1 };
@@ -113,7 +115,7 @@ uniforms.valleys        = { type: 'f', value: 1 };
 uniforms.snowLevel      = { type: 'f', value: 1 };
 uniforms.vegetation     = { type: 'f', value: 1 };
 uniforms.planetRadius   = { type: 'f', value: 1 };
-uniforms.waterLevel     = { type: 'f', value: 1 };
+uniforms.waterLevel     = { type: 'f', value: WATERLEVEL };
 uniforms.randomSeed     = { type: 'f', value: Math.random() * 1.0 + 0.7 };
 uniforms.planetTrans    = { type: 'v3',value: planet1Trans };
 uniforms.radius         = { type: 'f', value: RADIUS };
@@ -127,36 +129,37 @@ uniforms2.valleys        = { type: 'f', value: 1 };
 uniforms2.snowLevel      = { type: 'f', value: 1 };
 uniforms2.vegetation     = { type: 'f', value: 1 };
 uniforms2.planetRadius   = { type: 'f', value: 1 };
-uniforms2.waterLevel     = { type: 'f', value: 1 };
+uniforms2.waterLevel     = { type: 'f', value: WATERLEVEL };
 uniforms2.randomSeed     = { type: 'f', value: Math.random() * 1.0 + 0.7 };
 uniforms2.planetTrans    = { type: 'v3', value: planet2Trans };
 
 // Water uniforms
 var wateruniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
-wateruniforms.waterLevel        = { type: 'f', value: 1 };
+wateruniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms.planetTrans       = { type: 'v3', value: planet2Trans };
 
 // Water uniforms
 var wateruniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
-wateruniforms2.waterLevel        = { type: 'f', value: 1 };
+wateruniforms2.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms2.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
 
 // Cloud uniforms
 var cloudUniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
-cloudUniforms.waterLevel        = { type: 'f', value: 1 };
+cloudUniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 cloudUniforms.planetRadiusWater = { type: 'f',  value: 1 };
 cloudUniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 cloudUniforms.planetTrans       = { type: 'v3', value: planet2Trans };
 cloudUniforms.cloudDensity      = { type: 'v3', value: 0.5 };
+cloudUniforms.time = { type: 'f',  value: 1 };
 
 
 // Sun uniforms
 var sununiforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
-sununiforms.waterLevel        = { type: 'f', value: 1 };
+sununiforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 sununiforms.planetRadiusWater = { type: 'f', value: 1 };
 sununiforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 sununiforms.time              = { type: 'f', value: 0.0 };
@@ -224,10 +227,10 @@ function (vertex, fragment) {
   var planet2Geometry = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
   var sunGeometry = new THREE.SphereBufferGeometry( 110, 64, 64 );
   // Two spheres used for water
-  var waterGeometry = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
-  var waterGeometry2 = new THREE.SphereBufferGeometry( RADIUS, 128, 128 );
+  var waterGeometry = new THREE.SphereBufferGeometry( WATERLEVEL, 128, 128 );
+  var waterGeometry2 = new THREE.SphereBufferGeometry( WATERLEVEL, 128, 128 );
 
-  var cloudGeometry = new THREE.SphereBufferGeometry( RADIUS + 10, 64, 64 );
+  var cloudGeometry = new THREE.SphereBufferGeometry( RADIUS + 10, 128, 128 );
 
   // Add materials and spheres
   planet1 = new THREE.Mesh( planet1Geometry, shaderMaterial );
@@ -238,7 +241,7 @@ function (vertex, fragment) {
   waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial2 );
   planet2.add(waterSphere2);
 
-  sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
+  var sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
 
   var cloudSphere = new THREE.Mesh( cloudGeometry, cloudShaderMaterial );
 
@@ -286,11 +289,13 @@ function (vertex, fragment) {
 
       planet1.rotation.y -= 0.02;
       planet2.rotation.z +=0.005
+
+      sunSphere.rotation.y += 0.005;
     }
 
-    if(cloudBox.checked){
-      cloudSphere.rotation.z -= 0.005;
-    }
+    // if(cloudBox.checked){
+    //   //cloudSphere.rotation.z -= 0.005;
+    // }
 
     // scene.updateMatrixWorld();
     worldPosition.setFromMatrixPosition( planet1.matrixWorld );
@@ -311,7 +316,7 @@ function (vertex, fragment) {
     // Materials
     uniforms.snowLevel.value = document.getElementById('snow-slider').value;
     uniforms.vegetation.value = document.getElementById('vegetation-slider').value;
-    uniforms.waterLevel.value = document.getElementById('water-slider').value;
+    //uniforms.waterLevel.value = document.getElementById('water-slider').value;
 
     //------------------Update uniforms2----------------------
     // Radius
@@ -325,23 +330,24 @@ function (vertex, fragment) {
     // Materials
     uniforms2.snowLevel.value = document.getElementById('snow-slider').value;
     uniforms2.vegetation.value = document.getElementById('vegetation-slider').value;
-    uniforms2.waterLevel.value = document.getElementById('water-slider').value;
+    //uniforms2.waterLevel.value = document.getElementById('water-slider').value;
 
     //------------Update water and sun uniforms---------------
     // Water
-    wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
+    // wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms.planetTrans.value = worldPosition;
 
-    wateruniforms2.waterLevel.value = document.getElementById('water-slider').value;
+    // wateruniforms2.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms2.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms2.planetTrans.value = worldPosition2;
 
     // Clouds
-    cloudUniforms.waterLevel.value = document.getElementById('water-slider').value;
+    // cloudUniforms.waterLevel.value = document.getElementById('water-slider').value;
     cloudUniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     cloudUniforms.planetTrans.value = worldPosition2;
     cloudUniforms.cloudDensity.value = document.getElementById("cloud-slider").value;
+    cloudUniforms.time.value = time;
 
     // Sun
     sununiforms.time.value = time;

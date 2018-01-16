@@ -23,21 +23,21 @@
     <div class="GUI">
       <p>Mountains</p>
       <input type="range" id="amp-slider" class="slider" min="0" max="20" step="0.1" value="1" onmouseover="disableTrackball()" >
-      <p>Valleys</p>
-      <input type="range" id="valley-slider" class="slider" min="0" max="50" step="0.1" value="0" onmouseover="disableTrackball()" >
+      <p>Lakes</p>
+      <input type="range" id="valley-slider" class="slider" min="0" max="20" step="0.1" value="0" onmouseover="disableTrackball()" >
       <p>Surface roughness</p>
       <input type="range" id="amp-small-slider" class="slider" min="0.015" max="1" step="0.01" value="1" onmouseover="disableTrackball()" >
       <p>Radius</p>
       <input type="range" id="radius-slider" class="slider" min="0.5" max="5" step="0.1" value="1" onmouseover="disableTrackball()" >
-      <p>Water level</p>
-      <input type="range" id="water-slider" class="slider" min="-50" max="100" step="0.001" value="-10" onmouseover="disableTrackball()" >
+      <!-- <p>Water level</p> -->
+      <!-- <input type="range" id="water-slider" class="slider" min="-50" max="100" step="0.001" value="-10" onmouseover="disableTrackball()" > -->
       <p>Snow level</p>
       <input type="range" id="snow-slider" class="slider" min="-50" max="100" step="0.05" value="5" onmouseover="disableTrackball()" >
       <p>Vegetation level</p>
       <input type="range" id="vegetation-slider" class="slider" min="0" max="1.0" step="0.01" value="0" onmouseover="disableTrackball()" >
-      <p>Cloud density</p>
+      <p>Cloud thickness</p>
       <input type="range" id="cloud-slider" class="slider" min="0" max="1.0" step="0.01" value="0.5" onmouseover="disableTrackball()" >
-      <p>Animate clouds <input type="checkbox" id="cloudCheckbox"> </p>
+        <!--<p>Animate clouds <input type="checkbox" id="cloudCheckbox"> </p> -->
     </div>
   </div>
 </body>
@@ -190,10 +190,10 @@ void main(){
   vNormal = waterNormal;
 
   // First scale the sphere along with the planet, and then adjust the sea level
-  vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
-  vec3 newPosition = newRadius + normal * vec3(waterLevel);
+  // vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
+  // vec3 newPosition = newRadius + normal * vec3(waterLevel);
 
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 
 </script>
@@ -612,14 +612,12 @@ float snoise(vec3 v, out vec3 gradient)
 void main(){
 
   vLightPosition = vec3( vec4( lightPosition, 1.0) * modelViewMatrix);
-
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
 
   vec3 gradient = vec3(0.0);
 
-  // cloudNoise = 2.0 * clamp(snoise(0.03*position + ((time/2.0)), gradient), 0.0, 15.0);
-  cloudNoise = 2.0 * clamp(snoise(0.03*position , gradient), 0.0, 20.0) * cloudDensity;
+  cloudNoise = 2.0 * clamp(snoise(0.02*position + (time/10.0) , gradient), 0.0, 20.0) * cloudDensity;
 
   float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
 
@@ -630,7 +628,6 @@ void main(){
   vec3 newPosition = newRadius + normal * vec3(cloudAltitude);
 
   newPosition += normal*vec3(surfaceNoise);
-
 
   gradient *= 0.05 ;
   vec3 perturbation = gradient - dot(gradient, normal) * normal;
@@ -658,8 +655,6 @@ varying float cloudNoise;
 
 void main(){
 
-
-
   float Ka = 1.0;   // Ambient reflection coefficient
   float Kd = 1.0;   // Diffuse reflection coefficient
   float Ks = 0.6;   // Specular reflection coefficient
@@ -685,16 +680,10 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-  //vec4 sunColor = mix( vec4(0.5, 0.5, 0.5, 0.0), vec4(0.5, 0.5, 0.5, 0.0), cloudNoise );
-  vec4 sunColor = vec4(0.5, 0.5, 0.5, 0.0);
+  vec4 cloudColor = vec4(0.5, 0.5, 0.5, 0.0);
 
-  // vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
-  vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
-
-  //TODO: Brighter water in shallower parts
-
-  vec4 ambientColor = sunColor;
-  vec4 diffuseColor = sunColor;
+  vec4 ambientColor = cloudColor;
+  vec4 diffuseColor = cloudColor;
   vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);
 
   vec3 first = vec3(Ka * ambientColor);
@@ -702,8 +691,9 @@ void main(){
   vec3 third = vec3(Ks * specular * specularColor);
 
    gl_FragColor = vec4(first + second , cloudNoise);
+
+   // This is done to enable transparency
    gl_FragColor.rgb *= gl_FragColor.a;
-  // gl_FragColor 	= waterColor;
 }
 </script>
 <!-- End Shaders -->
