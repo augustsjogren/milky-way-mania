@@ -104,7 +104,6 @@ var worldPosition2 = new THREE.Vector3();
 var RADIUS = 80;
 var SEGMENTS = 512;
 var RINGS = 256;
-
 var WATERLEVEL = RADIUS - 1;
 
 // Planet 1 uniforms
@@ -168,55 +167,65 @@ function render() {
   renderer.render(scene, camera);
 }
 
-
 // Load the shaders from files
-ShaderLoader("shaders/vertex_planet.vert", "shaders/fragment_planet.frag",
+SHADER_LOADER.load(
+	function (data)
+	{
+    // Store the shaders in variables
+    var planetVertexShader = data.planet.vertex;
+		var planetFragmentShader = data.planet.fragment;
 
-function (vertex, fragment) {
+		var waterVertexShader = data.water.vertex;
+		var waterFragmentShader = data.water.fragment;
 
-  // create the sphere's material
+    var sunVertexShader = data.sun.vertex;
+		var sunFragmentShader = data.sun.fragment;
+
+    var cloudVertexShader = data.clouds.vertex;
+		var cloudFragmentShader = data.clouds.fragment;
+
+  // Create the materials used in the scene
   var shaderMaterial = new THREE.ShaderMaterial({
     uniforms:       uniforms,
-    vertexShader:   vertex,
-    fragmentShader: fragment,
+    vertexShader:   planetVertexShader,
+    fragmentShader: planetFragmentShader,
     lights:         true,
     wireframe:      false
   });
 
-  // create the sphere's material
   var shaderMaterial2 = new THREE.ShaderMaterial({
     uniforms:       uniforms2,
-    vertexShader:   vertex,
-    fragmentShader: fragment,
+    vertexShader:   planetVertexShader,
+    fragmentShader: planetFragmentShader,
     lights:         true,
     wireframe:      false
   });
 
   var waterShaderMaterial = new THREE.ShaderMaterial({
     uniforms:       wateruniforms,
-    vertexShader:   $('#watervertexshader').text(),
-    fragmentShader: $('#waterfragmentshader').text(),
+    vertexShader:   waterVertexShader,
+    fragmentShader: waterFragmentShader,
     lights:         true
   });
 
   var waterShaderMaterial2 = new THREE.ShaderMaterial({
     uniforms:       wateruniforms2,
-    vertexShader:   $('#watervertexshader').text(),
-    fragmentShader: $('#waterfragmentshader').text(),
+    vertexShader:   waterVertexShader,
+    fragmentShader: waterFragmentShader,
     lights:         true
   });
 
   var sunShaderMaterial = new THREE.ShaderMaterial({
     uniforms:       sununiforms,
-    vertexShader:   $('#sunvertexshader').text(),
-    fragmentShader: $('#sunfragmentshader').text(),
+    vertexShader:   sunVertexShader,
+    fragmentShader: sunFragmentShader,
     lights:         true
   });
 
   var cloudShaderMaterial = new THREE.ShaderMaterial({
     uniforms:       cloudUniforms,
-    vertexShader:   $('#cloudvertexshader').text(),
-    fragmentShader: $('#cloudfragmentshader').text(),
+    vertexShader:   cloudVertexShader,
+    fragmentShader: cloudFragmentShader,
     lights:         true,
     transparent: true,
     opacity: 0.8
@@ -368,4 +377,4 @@ function (vertex, fragment) {
   update();
 
 }
-) // End of shader loader
+);
