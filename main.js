@@ -29,9 +29,17 @@ var camera = new THREE.PerspectiveCamera(
   FAR
 );
 
-// This is just to supress a lot of warnings, some kind of bug
+// Resize the render view when the window is resized
+window.addEventListener( 'resize', onWindowResize, false );
+function onWindowResize(){
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+// This is just to supress a lot of warnings in firefox
 var ctx = renderer.context;
-// shut firefox up
 ctx.getShaderInfoLog = function () { return '' };
 
 // Controls to navigate the scene
@@ -55,15 +63,12 @@ var scene = new THREE.Scene();
 
 // Move the camera back towards the viewer
 camera.position.z = 1000;
-
-// Setup the renderer.
 renderer.setSize(WIDTH, HEIGHT);
 
 // Attach the renderer-supplied DOM element.
 $container.append(renderer.domElement);
 
 var isPaused = false;
-
 var cloudBox = document.getElementById("cloudCheckbox");
 
 // Listen for spacebar keypress
@@ -302,11 +307,7 @@ SHADER_LOADER.load(
       sunSphere.rotation.y += 0.005;
     }
 
-    // if(cloudBox.checked){
-    //   //cloudSphere.rotation.z -= 0.005;
-    // }
-
-    // scene.updateMatrixWorld();
+    // Get world coordinates and send to the shaders
     worldPosition.setFromMatrixPosition( planet1.matrixWorld );
     worldPosition2.setFromMatrixPosition( planet2.matrixWorld );
     uniforms.planetTrans.value = worldPosition;
@@ -366,15 +367,12 @@ SHADER_LOADER.load(
     //orbitControls.update();
 
     render();
-
     stats.end();
 
     // Schedule the next frame.
     requestAnimationFrame(update);
   }
-
   init();
   update();
-
 }
 );
