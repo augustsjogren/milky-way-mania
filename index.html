@@ -26,7 +26,7 @@
       <p>Lakes</p>
       <input type="range" id="valley-slider" class="slider" min="0" max="20" step="0.1" value="0" onmouseover="disableTrackball()" >
       <p>Surface roughness</p>
-      <input type="range" id="amp-small-slider" class="slider" min="0.015" max="1" step="0.01" value="1" onmouseover="disableTrackball()" >
+      <input type="range" id="amp-small-slider" class="slider" min="0.015" max="0.4" step="0.01" value="1" onmouseover="disableTrackball()" >
       <p>Radius</p>
       <input type="range" id="radius-slider" class="slider" min="0.5" max="5" step="0.1" value="1" onmouseover="disableTrackball()" >
       <!-- <p>Water level</p> -->
@@ -190,10 +190,11 @@ void main(){
   vNormal = waterNormal;
 
   // First scale the sphere along with the planet, and then adjust the sea level
-  // vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
+   vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
   // vec3 newPosition = newRadius + normal * vec3(waterLevel);
+   vec3 newPosition = newRadius;
 
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 
 </script>
@@ -680,8 +681,8 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
+  // Set some colors
   vec4 cloudColor = vec4(0.5, 0.5, 0.5, 0.0);
-
   vec4 ambientColor = cloudColor;
   vec4 diffuseColor = cloudColor;
   vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);
