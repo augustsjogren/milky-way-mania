@@ -316,13 +316,13 @@ void main()
 
   mMatrix = modelMatrix;
 
-  vec3 largeGradient = vec3(0.0);
+  vec3 mountainGradient = vec3(0.0);
   vec3 smallGradient = vec3(0.0);
   vec3 vegetationGradient = vec3(0.0);
   vec3 valleyGradient = vec3(0.0);
 
   // Clamp is used to prevent negative elevation
-  float largeNoise = randomSeed * amplitude*clamp(snoise(0.02*position, largeGradient), 0.0, 100.0);
+  float mountainNoise = randomSeed * amplitude*clamp(snoise(0.02*position, mountainGradient), 0.0, 100.0);
   float smallNoise = smallAmplitude*clamp(snoise(0.8*position, smallGradient), -0.5, 100.0);
   float valleyNoise = randomSeed * valleys * clamp(snoise(0.02*position, valleyGradient),-planetRadius, 0.0);
   float vegetationNoise = (vegetation/5.0)*clamp(snoise(0.8*position, vegetationGradient), -0.5, 100.0);
@@ -332,10 +332,10 @@ void main()
 
   //------Mountains------
   // Displace the surface upwards (Mountains)
-  vec3 newPosition = newRadius + normal * vec3(largeNoise);
+  vec3 newPosition = newRadius + normal * vec3(mountainNoise);
   // Recalculate normals for mountains
-  largeGradient *= 0.02;
-  vec3 perturbation = largeGradient - dot(largeGradient, normal) * normal;
+  mountainGradient *= 0.02;
+  vec3 perturbation = mountainGradient - dot(mountainGradient, normal) * normal;
   vec3 mountainNormal = normal - amplitude * perturbation;
   mountainNormal = normalize(mountainNormal);
 

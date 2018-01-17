@@ -25,6 +25,9 @@
       <input type="range" id="amp-slider" class="slider" min="0" max="20" step="0.1" value="1" onmouseover="disableTrackball()" >
       <p>Lakes</p>
       <input type="range" id="valley-slider" class="slider" min="0" max="20" step="0.1" value="0" onmouseover="disableTrackball()" >
+
+      <p>Water <input type="checkbox" id="waterCheckbox"> Lava <input type="checkbox" id="lavaCheckbox"> </p>
+
       <p>Surface roughness</p>
       <input type="range" id="amp-small-slider" class="slider" min="0.015" max="0.4" step="0.01" value="1" onmouseover="disableTrackball()" >
       <p>Radius</p>
@@ -44,7 +47,7 @@
 
 <!-- Shaders -->
 <script data-src="shaders/planet/vertex.js"	data-name="planet" type="x-shader/x-vertex" id="planetvertexshader"></script>
-<script data-src="shaders/planet/fragment.js"	data-name="planet" type="x-shader/x-fragment" id="waterfragmentshader"></script>
+<script data-src="shaders/planet/fragment.js"	data-name="planet" type="x-shader/x-fragment" id="planetfragmentshader"></script>
 
 <script data-src="shaders/water/vertex.js"	data-name="water" type="x-shader/x-vertex" id="watervertexshader"></script>
 <script data-src="shaders/water/fragment.js"	data-name="water" type="x-shader/x-fragment" id="waterfragmentshader"></script>

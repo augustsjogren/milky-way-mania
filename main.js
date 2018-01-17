@@ -143,6 +143,7 @@ wateruniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms.planetTrans       = { type: 'v3', value: planet2Trans };
+wateruniforms.waterColor       = { type: 'v4', value: new THREE.Vector4(0.0, 0.0, 0.6, 1.0) };
 
 // Water uniforms
 var wateruniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -150,6 +151,8 @@ wateruniforms2.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms2.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
+wateruniforms2.waterColor       = { type: 'v4', value: new THREE.Vector4(0.0, 0.0, 0.6, 1.0) };
+
 
 // Cloud uniforms
 var cloudUniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -344,6 +347,23 @@ SHADER_LOADER.load(
 
     //------------Update water and sun uniforms---------------
     // Water
+
+    if(document.getElementById('waterCheckbox').checked == true){
+      //document.getElementById('lavaCheckbox').checked = false;
+      wateruniforms.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
+      wateruniforms2.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
+    }
+    else if (document.getElementById('lavaCheckbox').checked == true) {
+      //document.getElementById('waterCheckbox').checked = false;
+      wateruniforms.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
+      wateruniforms2.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
+
+    }
+    else {
+      wateruniforms.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
+      wateruniforms2.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
+    }
+
     // wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms.planetTrans.value = worldPosition;

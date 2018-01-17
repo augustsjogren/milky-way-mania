@@ -8,6 +8,7 @@ varying vec3 vLightPosition;
 varying mat4 mMatrix;
 
 uniform vec3 planetTrans;
+uniform vec4 waterColor;
 
 
 void main(){
@@ -38,7 +39,7 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-  vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
+  //vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
   vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
   //TODO: Brighter water in shallower parts
