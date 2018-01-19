@@ -72,3 +72,12 @@ body{
     background: #4CAF50;
     cursor: pointer;
 }
+
+.instructions{
+  position: absolute;
+  color: white;
+  font-family: sans-serif;
+  
+  left: 50%;
+  transform: translateX(-50%);
+}

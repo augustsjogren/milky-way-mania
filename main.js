@@ -142,7 +142,7 @@ var wateruniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ]
 wateruniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
-wateruniforms.planetTrans       = { type: 'v3', value: planet2Trans };
+wateruniforms.planetTrans       = { type: 'v3', value: planet1Trans };
 wateruniforms.waterColor       = { type: 'v4', value: new THREE.Vector4(0.0, 0.0, 0.6, 1.0) };
 
 // Water uniforms
@@ -159,9 +159,18 @@ var cloudUniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ]
 cloudUniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 cloudUniforms.planetRadiusWater = { type: 'f',  value: 1 };
 cloudUniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
-cloudUniforms.planetTrans       = { type: 'v3', value: planet2Trans };
+cloudUniforms.planetTrans       = { type: 'v3', value: planet1Trans };
 cloudUniforms.cloudDensity      = { type: 'v3', value: 0.5 };
 cloudUniforms.time = { type: 'f',  value: 1 };
+
+// Cloud uniforms
+var cloudUniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
+cloudUniforms2.waterLevel        = { type: 'f', value: WATERLEVEL };
+cloudUniforms2.planetRadiusWater = { type: 'f',  value: 1 };
+cloudUniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
+cloudUniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
+cloudUniforms2.cloudDensity      = { type: 'v3', value: 0.5 };
+cloudUniforms2.time = { type: 'f',  value: 1 };
 
 
 // Sun uniforms
@@ -239,6 +248,15 @@ SHADER_LOADER.load(
     opacity: 0.8
   });
 
+  var cloudShaderMaterial2 = new THREE.ShaderMaterial({
+    uniforms:       cloudUniforms2,
+    vertexShader:   cloudVertexShader,
+    fragmentShader: cloudFragmentShader,
+    lights:         true,
+    transparent: true,
+    opacity: 0.8
+  });
+
   // Create the geometries for the planets
   var planet1Geometry = new THREE.SphereBufferGeometry( RADIUS, SEGMENTS, RINGS );
   var planet2Geometry = new THREE.SphereBufferGeometry(80, SEGMENTS, RINGS );
@@ -248,6 +266,7 @@ SHADER_LOADER.load(
   var waterGeometry2 = new THREE.SphereBufferGeometry( WATERLEVEL, 128, 128 );
 
   var cloudGeometry = new THREE.SphereBufferGeometry( RADIUS + 10, 128, 128 );
+  var cloudGeometry2 = new THREE.SphereBufferGeometry( RADIUS + 10, 128, 128 );
 
   // Add materials and spheres
   planet1 = new THREE.Mesh( planet1Geometry, shaderMaterial );
@@ -261,8 +280,11 @@ SHADER_LOADER.load(
   var sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
 
   var cloudSphere = new THREE.Mesh( cloudGeometry, cloudShaderMaterial );
+  var cloudSphere2 = new THREE.Mesh( cloudGeometry2, cloudShaderMaterial2 );
+
 
   planet1.add(cloudSphere);
+  planet2.add(cloudSphere2);
 
   // Pivots are used to rotate the planets in orbits
   var parent = new THREE.Object3D();
@@ -373,11 +395,15 @@ SHADER_LOADER.load(
     wateruniforms2.planetTrans.value = worldPosition2;
 
     // Clouds
-    // cloudUniforms.waterLevel.value = document.getElementById('water-slider').value;
     cloudUniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
-    cloudUniforms.planetTrans.value = worldPosition2;
+    cloudUniforms.planetTrans.value = worldPosition;
     cloudUniforms.cloudDensity.value = document.getElementById("cloud-slider").value;
     cloudUniforms.time.value = time;
+
+    cloudUniforms2.planetRadiusWater.value = document.getElementById("radius-slider").value;
+    cloudUniforms2.planetTrans.value = worldPosition2;
+    cloudUniforms2.cloudDensity.value = document.getElementById("cloud-slider").value;
+    cloudUniforms2.time.value = time;
 
     // Sun
     sununiforms.time.value = time;
