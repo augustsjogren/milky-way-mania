@@ -6,6 +6,7 @@ varying vec3 vPos;
 varying vec3 vNormal;
 varying vec3 vLightPosition;
 varying mat4 mMatrix;
+varying float lavaNoise;
 
 uniform vec3 planetTrans;
 uniform vec4 waterColor;
@@ -27,7 +28,6 @@ void main(){
   vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
 
   float lambertian = max(dot(N, L), 0.0);
-
   float specular = 0.0;
 
   if(lambertian > 0.0) {
@@ -42,10 +42,14 @@ void main(){
   //vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
   vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
-  //TODO: Brighter water in shallower parts
+  // Choose between lava or water
+  vec4 mixCol = waterColor;
+  if(waterColor != vec4(0.2, 0.2, 0.4, 1.0)){
+       mixCol = mix( waterColor, vec4(0.8, 0.3, 0.0, 0.4), lavaNoise );
+     }
 
-  vec4 ambientColor = waterColor*0.2;
-  vec4 diffuseColor = waterColor;
+  vec4 ambientColor = mixCol*0.2;
+  vec4 diffuseColor = mixCol;
   vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);
 
   vec3 first = vec3(Ka * ambientColor);

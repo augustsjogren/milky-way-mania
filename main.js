@@ -369,17 +369,11 @@ SHADER_LOADER.load(
 
     //------------Update water and sun uniforms---------------
     // Water
-
-    if(document.getElementById('waterCheckbox').checked == true){
-      //document.getElementById('lavaCheckbox').checked = false;
-      wateruniforms.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
-      wateruniforms2.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
-    }
-    else if (document.getElementById('lavaCheckbox').checked == true) {
+    // Toggle water or lava in the lakes
+    if (document.getElementById('lavaCheckbox').checked == true) {
       //document.getElementById('waterCheckbox').checked = false;
       wateruniforms.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
       wateruniforms2.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
-
     }
     else {
       wateruniforms.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
