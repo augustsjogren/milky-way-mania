@@ -9,7 +9,7 @@ varying mat4 mMatrix;
 varying float lavaNoise;
 
 uniform vec3 planetTrans;
-uniform vec4 waterColor;
+uniform float isLava;
 
 
 void main(){
@@ -39,13 +39,13 @@ void main(){
     specular = pow(specAngle, shininessVal);
   }
 
-  //vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
-  vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
+  vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
+  //vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
   // Choose between lava or water
   vec4 mixCol = waterColor;
-  if(waterColor != vec4(0.2, 0.2, 0.4, 1.0)){
-       mixCol = mix( waterColor, vec4(0.8, 0.3, 0.0, 0.4), lavaNoise );
+  if(isLava == 1.0){
+       mixCol = mix( vec4(1.0, 0.5, 0.0, 1.0), vec4(0.8, 0.3, 0.0, 0.4), lavaNoise );
      }
 
   vec4 ambientColor = mixCol*0.2;

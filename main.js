@@ -91,13 +91,6 @@ var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 $performance.append( stats.dom );
 
-// Unused for now
-//var light = new THREE.AmbientLight( 0xff00ff, 1.0 ); // soft white light
-var pointLight = new THREE.PointLight( 0xffffff, 1.0, 0 );
-pointLight.position.set(100, 0, 100);
-scene.add( pointLight );
-//scene.add( light );
-
 // The planet offset for sending to shaders
 var planet1Trans = new THREE.Vector3(600.0, 0.0, 0.0);
 var planet2Trans = new THREE.Vector3(900.0, 0.0, 0.0);
@@ -143,7 +136,7 @@ wateruniforms.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms.planetTrans       = { type: 'v3', value: planet1Trans };
-wateruniforms.waterColor       = { type: 'v4', value: new THREE.Vector4(0.0, 0.0, 0.6, 1.0) };
+wateruniforms.isLava            = { type:  'f',  value: 0 };
 
 // Water uniforms
 var wateruniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -151,8 +144,7 @@ wateruniforms2.waterLevel        = { type: 'f', value: WATERLEVEL };
 wateruniforms2.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
-wateruniforms2.waterColor       = { type: 'v4', value: new THREE.Vector4(0.0, 0.0, 0.6, 1.0) };
-
+wateruniforms2.isLava            = {  type: 'f',  value: 0 };
 
 // Cloud uniforms
 var cloudUniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -372,12 +364,12 @@ SHADER_LOADER.load(
     // Toggle water or lava in the lakes
     if (document.getElementById('lavaCheckbox').checked == true) {
       //document.getElementById('waterCheckbox').checked = false;
-      wateruniforms.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
-      wateruniforms2.waterColor.value = new THREE.Vector4(0.9, 0.4, 0.1, 1.0);
+      wateruniforms.isLava.value = 1.0;
+      wateruniforms2.isLava.value = 1.0;
     }
     else {
-      wateruniforms.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
-      wateruniforms2.waterColor.value = new THREE.Vector4(0.2, 0.2, 0.4, 1.0);
+      wateruniforms.isLava.value = 0.0;
+      wateruniforms2.isLava.value = 0.0;
     }
 
     // wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
