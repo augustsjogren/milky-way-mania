@@ -135,7 +135,7 @@ void main(){
 
   // Generate noise for both the displacement and the animated surface
   sunNoise = 2.0 * clamp(snoise(0.03*position + ((time/2.0)), gradient), 0.0, 15.0);
-  float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
+  float surfaceNoise = 4.0 * snoise(0.05*position, gradient);
 
   // Displace and calculate new normal
   vec3 newPosition = position + normal*vec3(surfaceNoise);
