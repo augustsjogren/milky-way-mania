@@ -11,6 +11,7 @@ varying float lavaNoise;
 
 uniform float waterLevel;
 uniform float planetRadiusWater;
+uniform float time;
 uniform vec3 lightPosition;
 uniform vec3 planetTrans;
 
@@ -135,14 +136,14 @@ void main(){
   mMatrix = modelMatrix;
 
   vec3 gradient = vec3(0.0);
-  float waterNoise = 0.05 * clamp(snoise(0.5*position, gradient), -100.0, 100.0);
+  float waterNoise = 0.05 * clamp(snoise(0.5*position , gradient), -100.0, 100.0);
 
   gradient *= 0.5;
   vec3 perturbation = gradient - dot(gradient, normal) * normal;
   vec3 waterNormal = normal - 0.05 * perturbation;
   waterNormal = normalize(waterNormal);
 
-  lavaNoise = 5.0 * clamp(snoise(0.1*position, gradient), -100.0, 100.0);
+  lavaNoise = 4.0 * clamp(snoise(0.1*position + ((time/4.0)), gradient), -100.0, 100.0);
 
   vNormal = waterNormal;
 

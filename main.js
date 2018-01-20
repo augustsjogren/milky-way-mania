@@ -137,6 +137,7 @@ wateruniforms.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms.planetTrans       = { type: 'v3', value: planet1Trans };
 wateruniforms.isLava            = { type:  'f',  value: 0 };
+wateruniforms.time              = { type: 'f', value: 0.0 };
 
 // Water uniforms
 var wateruniforms2 = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -145,6 +146,7 @@ wateruniforms2.planetRadiusWater = { type: 'f',  value: 1 };
 wateruniforms2.lightPosition     = { type: 'v3', value: new THREE.Vector3(0.0, 0.0, 0.0) };
 wateruniforms2.planetTrans       = { type: 'v3', value: planet2Trans };
 wateruniforms2.isLava            = {  type: 'f',  value: 0 };
+wateruniforms2.time              = { type: 'f', value: 0.0 };
 
 // Cloud uniforms
 var cloudUniforms = THREE.UniformsUtils.merge( [ THREE.UniformsLib[ "lights" ] ] );
@@ -260,22 +262,19 @@ SHADER_LOADER.load(
   var cloudGeometry = new THREE.SphereBufferGeometry( RADIUS + 10, 128, 128 );
   var cloudGeometry2 = new THREE.SphereBufferGeometry( RADIUS + 10, 128, 128 );
 
+  var sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
+  var cloudSphere = new THREE.Mesh( cloudGeometry, cloudShaderMaterial );
+  var cloudSphere2 = new THREE.Mesh( cloudGeometry2, cloudShaderMaterial2 );
+
   // Add materials and spheres
   planet1 = new THREE.Mesh( planet1Geometry, shaderMaterial );
   waterSphere = new THREE.Mesh( waterGeometry, waterShaderMaterial );
   planet1.add(waterSphere);
+  planet1.add(cloudSphere);
 
   planet2 = new THREE.Mesh( planet2Geometry, shaderMaterial2 );
   waterSphere2 = new THREE.Mesh( waterGeometry2, waterShaderMaterial2 );
   planet2.add(waterSphere2);
-
-  var sunSphere = new THREE.Mesh( sunGeometry, sunShaderMaterial );
-
-  var cloudSphere = new THREE.Mesh( cloudGeometry, cloudShaderMaterial );
-  var cloudSphere2 = new THREE.Mesh( cloudGeometry2, cloudShaderMaterial2 );
-
-
-  planet1.add(cloudSphere);
   planet2.add(cloudSphere2);
 
   // Pivots are used to rotate the planets in orbits
@@ -363,7 +362,6 @@ SHADER_LOADER.load(
     // Water
     // Toggle water or lava in the lakes
     if (document.getElementById('lavaCheckbox').checked == true) {
-      //document.getElementById('waterCheckbox').checked = false;
       wateruniforms.isLava.value = 1.0;
       wateruniforms2.isLava.value = 1.0;
     }
@@ -375,10 +373,12 @@ SHADER_LOADER.load(
     // wateruniforms.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms.planetTrans.value = worldPosition;
+    wateruniforms.time.value = time;
 
     // wateruniforms2.waterLevel.value = document.getElementById('water-slider').value;
     wateruniforms2.planetRadiusWater.value = document.getElementById("radius-slider").value;
     wateruniforms2.planetTrans.value = worldPosition2;
+    wateruniforms2.time.value = time;
 
     // Clouds
     cloudUniforms.planetRadiusWater.value = document.getElementById("radius-slider").value;

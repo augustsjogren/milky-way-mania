@@ -42,8 +42,6 @@ void main(){
   // vec4 sunColor = vec4(1.0, 1.0, 1.0, 1.0);
   vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
-  //TODO: Brighter water in shallower parts
-
   vec4 ambientColor = sunColor*2.5;
   vec4 diffuseColor = sunColor;
   vec4  specularColor = vec4(1.0, 1.0, 1.0, 1.0);

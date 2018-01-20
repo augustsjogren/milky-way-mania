@@ -128,30 +128,24 @@ float snoise(vec3 v, out vec3 gradient)
 void main(){
 
   vLightPosition = vec3( vec4( lightPosition, 1.0) * modelViewMatrix);
-
   vNormal = normalMatrix * normal;
   vPos = (modelMatrix * vec4(position, 1.0 )).xyz;
 
   vec3 gradient = vec3(0.0);
 
+  // Generate noise for both the displacement and the animated surface
   sunNoise = 2.0 * clamp(snoise(0.03*position + ((time/2.0)), gradient), 0.0, 15.0);
-
   float surfaceNoise = 2.0 * snoise(0.05*position, gradient);
 
+  // Displace and calculate new normal
   vec3 newPosition = position + normal*vec3(surfaceNoise);
-
-
   gradient *= 0.05 ;
   vec3 perturbation = gradient - dot(gradient, normal) * normal;
   vec3 sunNormal = normal - 2.0 * perturbation;
   sunNormal = normalize(sunNormal);
 
+  // New normal to send to fragment shader
   vNormal = sunNormal;
-
-
-  // First scale the sphere along with the planet, and then adjust the sea level
-  // vec3 newRadius = position * vec3 (planetRadiusWater, planetRadiusWater, planetRadiusWater);
-  // vec3 newPosition = newRadius + normal * vec3(waterLevel);
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }

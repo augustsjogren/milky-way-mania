@@ -21,8 +21,8 @@ void main(){
 
   //From vshader
   vec3 lightPos = vLightPosition;
-
   vec3 N = normalize(vNormal);
+  
   // The light vector from the lighposition (the sun) to the planet.
   // planetTrans is the world position for the planet
   vec3 L = normalize(vLightPosition - vec3(vec4(planetTrans, 1.0)*mMatrix) );
@@ -31,7 +31,7 @@ void main(){
   float specular = 0.0;
 
   if(lambertian > 0.0) {
-    vec3 R = reflect(-L, N);      // Reflected light vector
+    vec3 R = reflect(-L, N);   // Reflected light vector
     vec3 V = normalize(-vPos); // Vector to viewer
 
     // Compute the specular term
@@ -40,12 +40,11 @@ void main(){
   }
 
   vec4 waterColor = vec4(0.2, 0.2, 0.4, 1.0);
-  //vec4 lighterWaterColor = vec4(0.4, 0.4, 0.1, 1.0);
 
   // Choose between lava or water
   vec4 mixCol = waterColor;
   if(isLava == 1.0){
-       mixCol = mix( vec4(1.0, 0.5, 0.0, 1.0), vec4(0.8, 0.3, 0.0, 0.4), lavaNoise );
+       mixCol = 2.0 * mix( vec4(1.0, 0.5, 0.0, 1.0), vec4(0.8, 0.3, 0.0, 0.4), lavaNoise );
      }
 
   vec4 ambientColor = mixCol*0.2;
@@ -57,5 +56,4 @@ void main(){
   vec3 third = vec3(Ks * specular * specularColor);
 
    gl_FragColor = vec4(first + second , 1.0);
-  // gl_FragColor 	= waterColor;
 }
